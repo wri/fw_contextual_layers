@@ -1,0 +1,18 @@
+{
+  "logger": {
+    "name": "fw-contextual-layer-DEV",
+    "level": "debug",
+    "toFile": false,
+    "dirLogFile": null
+  },
+  "service": {
+    "name": "FW Contextual Layer",
+    "port": 3025
+  },
+  "mongodb": {
+    "database": "fw_contextual_layer",
+    "host": "localhost",
+    "port": "27017"
+  },
+  "hansenUrl": "https://tiles.globalforestwatch.org/umd_tree_cover_loss/v1.7/tcd_30/{z}/{x}/{y}.png"
+}
