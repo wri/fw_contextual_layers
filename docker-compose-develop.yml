@@ -1,4 +1,4 @@
-version: "3"
+version: "3.5"
 services:
   develop:
     build: .
@@ -9,10 +9,10 @@ services:
       PORT: 3025
       NODE_PATH: app/src
       CT_REGISTER_MODE: auto
-      CT_URL: http://mymachine:9000
+      CT_URL: https://api.resourcewatch.org
       LOCAL_URL: http://127.0.0.1:3025
+      TEAMS_API_URL: http://fw-teams-develop:3035/api/v1
       MONGO_PORT_27017_TCP_ADDR: mongo
-      CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
       API_VERSION: v1
       FASTLY_ENABLED: "false"
     command: develop
@@ -20,6 +20,9 @@ services:
       - ./app:/opt/fw-contextual-layer/app
     depends_on:
       - mongo
+    networks:
+      - gfw-network
+      - gfw-contextual-layers-network
   mongo:
     image: mongo:3.4
     container_name: fw-contextual-layer-mongo-develop
@@ -29,3 +32,10 @@ services:
     volumes:
       - $HOME/docker/data/fw-contextual-layer:/data/db
     restart: always
+    networks:
+      - gfw-contextual-layers-network
+networks:
+  gfw-network:
+    name: gfw-network
+  gfw-contextual-layers-network:
+    name: gfw-contextual-layers-network
