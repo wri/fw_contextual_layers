@@ -8,13 +8,11 @@ services:
     environment:
       PORT: 3025
       NODE_PATH: app/src
-      CT_REGISTER_MODE: auto
       CT_URL: https://api.resourcewatch.org
       LOCAL_URL: http://127.0.0.1:3025
       TEAMS_API_URL: http://fw-teams-develop:3035/api/v1
       MONGO_PORT_27017_TCP_ADDR: mongo
       API_VERSION: v1
-      FASTLY_ENABLED: "false"
     command: develop
     volumes:
       - ./app:/opt/fw-contextual-layer/app
