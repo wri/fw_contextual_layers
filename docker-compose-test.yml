@@ -1,0 +1,25 @@
+version: "3"
+services:
+  test:
+    build: .
+    ports:
+      - "3025:3025"
+    container_name: fw-contextual-layer-test
+    environment:
+      PORT: 3025
+      NODE_PATH: app/src
+      NODE_ENV: test
+      CT_URL: http://127.0.0.1:9000
+      LOCAL_URL: http://127.0.0.1:3025
+      TEAMS_API_URL: http://fw-teams-develop:3035/api/v1
+      MONGO_PORT_27017_TCP_ADDR: mongo
+      API_VERSION: v1
+    command: test
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:3.4
+    command: --smallfiles
+    ports:
+      - "27017"
