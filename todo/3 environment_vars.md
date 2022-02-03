@@ -1,4 +1,4 @@
-- [ ] Remove all references to process.env (except NODE_ENV in one place)
+- [x] Remove all references to process.env (except NODE_ENV in one place)
 - [ ] Simplify the configuration files
   - [x] Should only have default.json
   - [x] And then custom-environment-variables.json for environment variables

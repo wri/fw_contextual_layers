@@ -9,7 +9,7 @@ services:
       PORT: 3025
       NODE_PATH: app/src
       NODE_ENV: dev
-      CT_URL: https://api.resourcewatch.org
+      CONTROL_TOWER_URL: https://api.resourcewatch.org
       LOCAL_URL: http://127.0.0.1:3025
       TEAMS_API_URL: http://fw-teams-develop:3035/api/v1
       MONGO_PORT_27017_TCP_ADDR: mongo

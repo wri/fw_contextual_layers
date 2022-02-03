@@ -5,5 +5,11 @@
   "mongodb": {
     "host": "MONGO_PORT_27017_TCP_ADDR",
     "port": "MONGO_PORT_27017_TCP_PORT"
+  },
+  "teamsAPI": {
+    "url": "TEAMS_API_URL"
+  },
+  "controlTower": {
+    "url": "CONTROL_TOWER_URL"
   }
 }
