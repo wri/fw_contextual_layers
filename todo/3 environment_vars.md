@@ -1,5 +1,5 @@
 - [x] Remove all references to process.env (except NODE_ENV in one place)
-- [ ] Simplify the configuration files
+- [x] Simplify the configuration files
   - [x] Should only have default.json
   - [x] And then custom-environment-variables.json for environment variables
 - [x] Align Docker’s ENV vars with the configuration files
