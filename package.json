@@ -62,5 +62,6 @@
     "request": "^2.79.0",
     "request-promise": "^4.1.1",
     "rw-api-microservice-node": "^3.4.1"
-  }
+  },
+  "prettier": "@3sidedcube/prettier-config"
 }
