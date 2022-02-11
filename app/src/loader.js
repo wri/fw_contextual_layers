@@ -11,7 +11,7 @@ module.exports = (() => {
   const loadAPI = (app, path, pathApi) => {
     const routesFiles = fs.readdirSync(path);
     let existIndexRouter = false;
-    routesFiles.forEach((file) => {
+    routesFiles.forEach(file => {
       const newPath = path ? `${path}/${file}` : file;
       const stat = fs.statSync(newPath);
       if (!stat.isDirectory()) {
@@ -45,13 +45,13 @@ module.exports = (() => {
     }
   };
 
-  const loadRoutes = (app) => {
+  const loadRoutes = app => {
     logger.debug("Loading routes...");
     loadAPI(app, routersPath);
     logger.debug("Loaded routes correctly!");
   };
 
   return {
-    loadRoutes,
+    loadRoutes
   };
 })();

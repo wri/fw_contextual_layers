@@ -4,27 +4,20 @@ class LayerService {
   static get type() {
     return {
       USER: "USER",
-      TEAM: "TEAM",
+      TEAM: "TEAM"
     };
   }
 
   static setIsPublic(data, owner) {
-    return data.user.role === "ADMIN" && owner.type === LayerService.type.USER
-      ? data.isPublic
-      : false;
+    return data.user.role === "ADMIN" && owner.type === LayerService.type.USER ? data.isPublic : false;
   }
 
   static updateIsPublic(layer, data) {
-    return data.user.role === "ADMIN" &&
-      layer.owner.type === LayerService.type.USER
-      ? data.isPublic
-      : layer.isPublic;
+    return data.user.role === "ADMIN" && layer.owner.type === LayerService.type.USER ? data.isPublic : layer.isPublic;
   }
 
   static getEnabled(layer, data, team) {
-    return !team || team.managers.some((manager) => manager.id === data.user.id)
-      ? data.enabled
-      : layer.enabled;
+    return !team || team.managers.some(manager => manager.id === data.user.id) ? data.enabled : layer.enabled;
   }
 
   static create(data, owner) {
@@ -42,7 +35,7 @@ class LayerService {
       case LayerService.type.USER:
         return layer.owner.id.toString() === user.id;
       case LayerService.type.TEAM:
-        return team.managers.some((manager) => manager.id === user.id);
+        return team.managers.some(manager => manager.id === user.id);
     }
   }
 }

@@ -1,4 +1,4 @@
-module.exports = (grunt) => {
+module.exports = grunt => {
   grunt.file.setBase("..");
   require("load-grunt-tasks")(grunt);
 
@@ -9,9 +9,9 @@ module.exports = (grunt) => {
           script: "app/index.js",
           node_env: "dev",
           port: process.env.PORT,
-          output: "started",
-        },
-      },
+          output: "started"
+        }
+      }
     },
 
     mochaTest: {
@@ -20,30 +20,30 @@ module.exports = (grunt) => {
           reporter: "spec",
           quiet: false,
           timeout: 10000,
-          clearRequireCache: true,
+          clearRequireCache: true
         },
-        src: ["app/test/e2e/**/*.spec.js"],
-      },
+        src: ["app/test/e2e/**/*.spec.js"]
+      }
     },
 
     watch: {
       options: {
-        livereload: 35730,
+        livereload: 35730
       },
       jssrc: {
         files: ["app/src/**/*.js"],
         tasks: ["express:dev"],
         options: {
-          spawn: false,
-        },
+          spawn: false
+        }
       },
       e2eTest: {
         files: ["app/test/e2e/**/*.spec.js"],
         tasks: ["express:test", "mochaTest:e2e"],
         options: {
-          spawn: true,
-        },
-      },
+          spawn: true
+        }
+      }
     },
 
     nyc: {
@@ -53,12 +53,12 @@ module.exports = (grunt) => {
           exclude: "*.test.*",
           reporter: ["lcov", "text-summary"],
           reportDir: "coverage",
-          all: true,
+          all: true
         },
         cmd: false,
-        args: ["grunt", "--gruntfile", "app/Gruntfile.js", "mochaTest:e2e"],
-      },
-    },
+        args: ["grunt", "--gruntfile", "app/Gruntfile.js", "mochaTest:e2e"]
+      }
+    }
   });
 
   grunt.registerTask("e2eTest", ["mochaTest:e2e"]);

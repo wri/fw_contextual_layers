@@ -14,11 +14,11 @@ class ErrorSerializer {
     }
     return {
       source: {
-        parameter: keys[0],
+        parameter: keys[0]
       },
       code: message.replace(/ /g, "_").toLowerCase(),
       title: message,
-      detail: data[keys[0]],
+      detail: data[keys[0]]
     };
   }
 
@@ -30,7 +30,7 @@ class ErrorSerializer {
       }
     }
     return {
-      errors,
+      errors
     };
   }
 
@@ -39,9 +39,9 @@ class ErrorSerializer {
       errors: [
         {
           status,
-          detail: message,
-        },
-      ],
+          detail: message
+        }
+      ]
     };
   }
 }
