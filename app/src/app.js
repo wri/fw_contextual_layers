@@ -17,9 +17,9 @@ const koaBody = require("koa-body")({
 const loggedInUserService = require("./services/LoggedInUserService");
 
 mongoose.Promise = Promise;
-const mongoUri =
-  process.env.MONGO_URI ||
-  `mongodb://${config.get("mongodb.host")}:${config.get("mongodb.port")}/${config.get("mongodb.database")}`;
+const mongoUri = `mongodb://${config.get("mongodb.host")}:${config.get("mongodb.port")}/${config.get(
+  "mongodb.database"
+)}`;
 
 mongoose.connect(mongoUri, err => {
   if (err) {
@@ -69,8 +69,8 @@ app.use(async (ctx, next) => {
 
 loader.loadRoutes(app);
 
-const server = app.listen(process.env.PORT, () => {});
+const server = app.listen(config.get("service.port"), () => {});
 
-logger.info("Server started in ", process.env.PORT);
+logger.info("Server started in ", config.get("service.port"));
 
 module.exports = server;

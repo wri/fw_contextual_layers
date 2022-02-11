@@ -1,11 +1,12 @@
 const logger = require("logger");
 const axios = require("axios");
+const config = require("config");
 const loggedInUserService = require("./LoggedInUserService");
 
 class TeamService {
   static async getTeam(teamId) {
     logger.info("Get team");
-    const baseURL = process.env.TEAMS_API_URL;
+    const baseURL = config.get("teamsAPI.url");
     const response = await axios.default({
       baseURL,
       url: `/teams/${teamId}`,
@@ -21,7 +22,7 @@ class TeamService {
 
   static async getTeamByUserId(userId) {
     logger.info("Get team by user id");
-    const baseURL = process.env.TEAMS_API_URL;
+    const baseURL = config.get("teamsAPI.url");
     const response = await axios.default({
       baseURL,
       url: `/teams/user/${userId}`,
@@ -37,7 +38,7 @@ class TeamService {
 
   static async patchTeamById(teamId, body) {
     logger.info("Get team by user id");
-    const baseURL = process.env.TEAMS_API_URL;
+    const baseURL = config.get("teamsAPI.url");
     const response = await axios.default({
       baseURL,
       url: `/teams/${teamId}`,
