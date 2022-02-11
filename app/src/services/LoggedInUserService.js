@@ -13,10 +13,7 @@ class LoggedInUserService {
         ctx.response.status = getLoggedUserError.statusCode;
         ctx.response.body = getLoggedUserError.error;
       } else {
-        ctx.throw(
-          500,
-          `Error loading user info from token - ${getLoggedUserError.toString()}`
-        );
+        ctx.throw(500, `Error loading user info from token - ${getLoggedUserError.toString()}`);
       }
     }
   }
@@ -37,39 +34,25 @@ class LoggedInUserService {
         baseURL,
         url: `/auth/user/me`,
         headers: {
-          authorization: ctx.request.header.authorization,
-        },
+          authorization: ctx.request.header.authorization
+        }
       };
       const response = await axios.default(getUserDetailsRequestConfig);
-      logger.debug(
-        "[getLoggedUser] Retrieved token data, response status:",
-        response.status
-      );
+      logger.debug("[getLoggedUser] Retrieved token data, response status:", response.status);
       if (["GET", "DELETE"].includes(ctx.request.method.toUpperCase())) {
         ctx.request.query = {
           ...ctx.request.query,
-          loggedUser: JSON.stringify(response.data),
+          loggedUser: JSON.stringify(response.data)
         };
-      } else if (
-        ["POST", "PATCH", "PUT"].includes(ctx.request.method.toUpperCase())
-      ) {
+      } else if (["POST", "PATCH", "PUT"].includes(ctx.request.method.toUpperCase())) {
         ctx.request.body.loggedUser = response.data;
         ctx.request.body.token = ctx.request.header.authorization;
       }
     } catch (err) {
       logger.error("Error getting user data", err);
       // eslint-disable-next-line no-cond-assign,no-void
-      if (
-        (_a = err === null || err === void 0 ? void 0 : err.response) ===
-          null || _a === void 0
-          ? void 0
-          : _a.data
-      ) {
-        throw new response_error.ResponseError(
-          err.response.status,
-          err.response.data,
-          err.response
-        );
+      if ((_a = err === null || err === void 0 ? void 0 : err.response) === null || _a === void 0 ? void 0 : _a.data) {
+        throw new response_error.ResponseError(err.response.status, err.response.data, err.response);
       }
       throw err;
     }

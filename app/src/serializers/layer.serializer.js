@@ -1,19 +1,11 @@
 const JSONAPISerializer = require("jsonapi-serializer").Serializer;
 
 const layerSerializer = new JSONAPISerializer("contextual-layer", {
-  attributes: [
-    "isPublic",
-    "name",
-    "url",
-    "description",
-    "enabled",
-    "owner",
-    "createdAt",
-  ],
+  attributes: ["isPublic", "name", "url", "description", "enabled", "owner", "createdAt"],
   resource: {
-    attributes: ["type", "content"],
+    attributes: ["type", "content"]
   },
-  keyForAttribute: "camelCase",
+  keyForAttribute: "camelCase"
 });
 
 class LayerSerializer {

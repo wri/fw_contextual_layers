@@ -10,7 +10,7 @@ const lossLayerProvider = require("lossLayer.provider");
 const TileNotFoundError = require("TileNotFoundError");
 
 const router = new Router({
-  prefix: "/contextual-layer",
+  prefix: "/contextual-layer"
 });
 
 class Layer {
@@ -21,10 +21,7 @@ class Layer {
   static async getAll(ctx) {
     logger.info("Get all layers");
     const userId = ctx.request.body.user.id;
-    const enabled =
-      typeof ctx.request.query.enabled !== "undefined"
-        ? { enabled: ctx.request.query.enabled }
-        : null;
+    const enabled = typeof ctx.request.query.enabled !== "undefined" ? { enabled: ctx.request.query.enabled } : null;
     let team = null;
     try {
       team = await TeamService.getTeamByUserId(userId);
@@ -36,13 +33,9 @@ class Layer {
     const query = {
       $and: [
         {
-          $or: [
-            { isPublic: true },
-            { "owner.id": userId },
-            { _id: { $in: teamLayers } },
-          ],
-        },
-      ],
+          $or: [{ isPublic: true }, { "owner.id": userId }, { _id: { $in: teamLayers } }]
+        }
+      ]
     };
     if (enabled) query.$and.push(enabled);
     const layers = await LayerModel.find(query, { "owner.id": 0 });
@@ -54,7 +47,7 @@ class Layer {
     logger.info("Create layer");
     const owner = {
       type: LayerService.type.USER,
-      id: ctx.request.body.user.id,
+      id: ctx.request.body.user.id
     };
     let layer = null;
     try {
@@ -76,10 +69,7 @@ class Layer {
       logger.error(e);
       ctx.throw(500, "Team retrieval failed.");
     }
-    const isManager =
-      team &&
-      team.managers &&
-      team.managers.some((manager) => manager.id === ctx.request.body.user.id);
+    const isManager = team && team.managers && team.managers.some(manager => manager.id === ctx.request.body.user.id);
     if (isManager) {
       let layer = null;
       try {
@@ -91,7 +81,7 @@ class Layer {
       const layers = team.layers || [];
       try {
         await TeamService.patchTeamById(owner.id, {
-          layers: [...layers, layer.id],
+          layers: [...layers, layer.id]
         });
       } catch (e) {
         logger.error(e);
@@ -157,11 +147,7 @@ class Layer {
         ctx.throw(500, "Team retrieval failed.");
       }
     }
-    const hasPermission = LayerService.canDeleteLayer(
-      layer,
-      ctx.request.body.user,
-      team
-    );
+    const hasPermission = LayerService.canDeleteLayer(layer, ctx.request.body.user, team);
     if (hasPermission) {
       try {
         await LayerModel.remove({ _id: layerId });
@@ -178,9 +164,7 @@ class Layer {
 
   static async hansenLayer(ctx) {
     const { x, y, z, startYear, endYear } = ctx.params;
-    logger.info(
-      `Retrieving hansen tile: /${startYear}/${endYear}/${z}/${x}/${y}`
-    );
+    logger.info(`Retrieving hansen tile: /${startYear}/${endYear}/${z}/${x}/${y}`);
     let data;
     try {
       data = await lossLayerProvider.getTile({
@@ -188,7 +172,7 @@ class Layer {
         x,
         y,
         startYear,
-        endYear,
+        endYear
       });
     } catch (e) {
       if (e instanceof TileNotFoundError) {
@@ -206,7 +190,7 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
 
   const user = {
     ...(query.loggedUser ? JSON.parse(query.loggedUser) : {}),
-    ...body.loggedUser,
+    ...body.loggedUser
   };
 
   if (!user || !user.id) {
@@ -216,27 +200,9 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
   await next();
 };
 
-router.get(
-  "/",
-  isAuthenticatedMiddleware,
-  ...Layer.middleware,
-  LayerValidator.getAll,
-  Layer.getAll
-);
-router.post(
-  "/",
-  isAuthenticatedMiddleware,
-  ...Layer.middleware,
-  LayerValidator.create,
-  Layer.createUserLayer
-);
-router.patch(
-  "/:layerId",
-  isAuthenticatedMiddleware,
-  ...Layer.middleware,
-  LayerValidator.patch,
-  Layer.patchLayer
-);
+router.get("/", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getAll);
+router.post("/", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.create, Layer.createUserLayer);
+router.patch("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.patch, Layer.patchLayer);
 router.post(
   "/team/:teamId",
   isAuthenticatedMiddleware,
@@ -244,15 +210,6 @@ router.post(
   LayerValidator.create,
   Layer.createTeamLayer
 );
-router.delete(
-  "/:layerId",
-  isAuthenticatedMiddleware,
-  ...Layer.middleware,
-  Layer.deleteLayer
-);
-router.get(
-  "/loss-layer/:startYear/:endYear/:z/:x/:y.png",
-  LayerValidator.tile,
-  Layer.hansenLayer
-);
+router.delete("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteLayer);
+router.get("/loss-layer/:startYear/:endYear/:z/:x/:y.png", LayerValidator.tile, Layer.hansenLayer);
 module.exports = router;

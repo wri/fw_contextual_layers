@@ -28,9 +28,7 @@ describe("GET healthcheck", function () {
   // eslint-disable-next-line mocha/no-hooks-for-single-case
   afterEach(function () {
     if (!nock.isDone()) {
-      throw new Error(
-        `Not all nock interceptors were used: ${nock.pendingMocks()}`
-      );
+      throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
     }
   });
 });
