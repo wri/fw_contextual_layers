@@ -12,18 +12,16 @@ const koaBody = require("koa-body")({
   multipart: true,
   jsonLimit: "50mb",
   formLimit: "50mb",
-  textLimit: "50mb",
+  textLimit: "50mb"
 });
 const loggedInUserService = require("./services/LoggedInUserService");
 
 mongoose.Promise = Promise;
 const mongoUri =
   process.env.MONGO_URI ||
-  `mongodb://${config.get("mongodb.host")}:${config.get(
-    "mongodb.port"
-  )}/${config.get("mongodb.database")}`;
+  `mongodb://${config.get("mongodb.host")}:${config.get("mongodb.port")}/${config.get("mongodb.database")}`;
 
-mongoose.connect(mongoUri, (err) => {
+mongoose.connect(mongoUri, err => {
   if (err) {
     logger.error(err);
     throw new Error(err);

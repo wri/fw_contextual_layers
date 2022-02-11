@@ -11,8 +11,8 @@ class TeamService {
       url: `/teams/${teamId}`,
       method: "GET",
       headers: {
-        authorization: loggedInUserService.token,
-      },
+        authorization: loggedInUserService.token
+      }
     });
     const team = response.data;
     if (!team || !team.data) return null;
@@ -27,8 +27,8 @@ class TeamService {
       url: `/teams/user/${userId}`,
       method: "GET",
       headers: {
-        authorization: loggedInUserService.token,
-      },
+        authorization: loggedInUserService.token
+      }
     });
     const team = response.data;
     if (!team || !team.data) return null;
@@ -44,8 +44,8 @@ class TeamService {
       method: "PATCH",
       data: body,
       headers: {
-        authorization: loggedInUserService.token,
-      },
+        authorization: loggedInUserService.token
+      }
     });
     const team = response.data;
     return { ...team.data.attributes, id: team.data.id };

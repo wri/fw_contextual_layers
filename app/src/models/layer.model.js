@@ -9,10 +9,10 @@ const Layer = new Schema({
   description: { type: String, required: false },
   owner: {
     id: { type: Schema.Types.ObjectId, required: true, trim: true },
-    type: { type: String, required: true, trim: true },
+    type: { type: String, required: true, trim: true }
   },
   enabled: { type: Boolean, required: true, default: false },
-  createdAt: { type: Date, required: true, default: Date.now },
+  createdAt: { type: Date, required: true, default: Date.now }
 });
 
 module.exports = mongoose.model("Layer", Layer);

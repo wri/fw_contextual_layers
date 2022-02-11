@@ -22,16 +22,12 @@ class LossLayerProtocol {
 
   // eslint-disable-next-line consistent-return
   static async getTile(z, x, y) {
-    const TILE_URL = config
-      .get("hansenUrl")
-      .replace("{z}", z)
-      .replace("{x}", x)
-      .replace("{y}", y);
+    const TILE_URL = config.get("hansenUrl").replace("{z}", z).replace("{x}", x).replace("{y}", y);
     try {
       return await request({
         uri: TILE_URL,
         method: "GET",
-        encoding: null,
+        encoding: null
       });
     } catch (e) {
       logger.error("Tile not found", e);
@@ -46,11 +42,7 @@ class LossLayerProtocol {
     const exp = z < 11 ? 0.3 + (z - 3) / 20 : 1;
     const imgData = data;
 
-    const myscale = d3.scale
-      .pow()
-      .exponent(exp)
-      .domain([0, 256])
-      .range([0, 256]);
+    const myscale = d3.scale.pow().exponent(exp).domain([0, 256]).range([0, 256]);
 
     for (let i = 0; i < w; ++i) {
       for (let j = 0; j < h; ++j) {
@@ -94,10 +86,8 @@ class LossLayerProtocol {
       ctx.mozImageSmoothingEnabled = false;
 
       // tile scaling
-      const srcX =
-        ((256 / Math.pow(2, zsteps)) * (x % Math.pow(2, zsteps))) | 0;
-      const srcY =
-        ((256 / Math.pow(2, zsteps)) * (y % Math.pow(2, zsteps))) | 0;
+      const srcX = ((256 / Math.pow(2, zsteps)) * (x % Math.pow(2, zsteps))) | 0;
+      const srcY = ((256 / Math.pow(2, zsteps)) * (y % Math.pow(2, zsteps))) | 0;
       const srcW = (256 / Math.pow(2, zsteps)) | 0;
       const srcH = (256 / Math.pow(2, zsteps)) | 0;
 
@@ -110,7 +100,7 @@ class LossLayerProtocol {
       endYear,
       z,
       w: canvas.width,
-      h: canvas.height,
+      h: canvas.height
     });
     ctx.putImageData(I, 0, 0);
     return canvas;
@@ -122,7 +112,7 @@ class LossLayerProtocol {
       x,
       y,
       startYear,
-      endYear,
+      endYear
     });
     const imageString = canvasTile.toDataURL(format);
     // eslint-disable-next-line no-buffer-constructor
