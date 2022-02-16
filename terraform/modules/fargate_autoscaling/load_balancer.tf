@@ -14,7 +14,7 @@ resource "aws_lb" "default" {
 }
 
 resource "aws_lb_target_group" "default" {
-  name_prefix = trimsuffix(replace(substr("${var.project}-tg${var.name_suffix}", 0, 6), "_", "-"), "-")
+  name = trimsuffix(replace(substr("${var.project}-tg${var.name_suffix}", 0, 32), "_", "-"), "-")
   port     = var.container_port
   protocol = "HTTP"
   vpc_id   = var.vpc_id
