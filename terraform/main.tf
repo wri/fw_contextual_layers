@@ -33,6 +33,7 @@ module "lb_listener_rule" {
 }
 
 module "fargate_autoscaling" {
+  # retry
   source                       = "git::https://github.com/wri/gfw-terraform-modules.git//terraform/modules/fargate_autoscaling?ref=v0.5.1"
   project                      = var.project_prefix
   tags                         = local.fargate_tags
