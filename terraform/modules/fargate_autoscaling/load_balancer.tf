@@ -74,3 +74,19 @@ resource "aws_lb_listener" "https" {
     type             = "forward"
   }
 }
+
+module "lb_listener_rule" {
+  count = var.load_balancer_arn == null ? 0 : 1
+  source              = "./lb_listener_rule"
+  container_port      = var.container_port
+  lb_target_group_arn = aws_lb_target_group.default.id
+  listener_arn        = var.listener_arn
+  project_prefix      = var.project_prefix
+  path_pattern        = var.path_pattern
+  tags                = var.tags
+  vpc_id              = var.vpc_id
+  priority            = var.priority
+  depends_on = [
+    aws_lb_target_group.default
+  ]
+}

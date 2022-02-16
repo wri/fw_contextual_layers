@@ -126,3 +126,24 @@ variable "acm_certificate_arn" {
   default     = null
   description = "The ACM/ SSL certificate to use. When set, listener port will be set to 443. Request to port 80 will be forwarded. All other ports will be closed."
 }
+
+variable "project_prefix" {
+  type = string
+}
+
+
+variable "lb_target_group_arn" {
+  type = string
+}
+
+variable "listener_arn" {
+  type = string
+}
+
+variable "path_pattern" {
+  type = list(string)
+}
+
+variable "priority" {
+  type = number
+}

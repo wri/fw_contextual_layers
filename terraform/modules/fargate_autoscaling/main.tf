@@ -38,7 +38,8 @@ resource "aws_ecs_service" "default" {
     aws_lb_listener.http,
     aws_lb_listener.http_https,
     aws_lb_listener.https,
-    aws_lb_target_group.default
+    aws_lb_target_group.default,
+    module.lb_listener_rule
   ]
 }
 
