@@ -53,3 +53,19 @@ variable "auto_scaling_min_capacity" {
 variable "git_sha" {
   type = string
 }
+variable "NODE_PATH" {
+  type = string
+  default = "app/src"
+}
+variable "NODE_ENV" {
+  type = string
+  default = "dev"
+}
+variable "CT_URL" {
+  type = string
+  default = "https://api.resourcewatch.org"
+}
+variable "API_VERSION" {
+  type = string
+  default = "v1"
+}
