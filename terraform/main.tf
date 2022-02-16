@@ -58,13 +58,9 @@ module "fargate_autoscaling" {
   ]
   task_execution_role_policies = [
     data.terraform_remote_state.core.outputs.document_db_secrets_policy_arn,
-    module.google_sheets_private_key.read_policy_arn,
-    module.google_sheets_project_email.read_policy_arn
   ]
   container_definition = data.template_file.container_definition.rendered
   depends_on = [
-    module.google_sheets_private_key,
-    module.google_sheets_project_email,
     module.app_docker_image
   ]
 }
@@ -72,6 +68,9 @@ module "fargate_autoscaling" {
 data "template_file" "container_definition" {
   template = file("${path.root}/templates/container_definition.json.tmpl")
   vars = {
+    image          = "${module.app_docker_image.repository_url}:${local.container_tag}"
+    container_name = var.project_prefix
+    container_port = var.container_port
     PORT = var.container_port
     NODE_PATH = var.NODE_PATH
     NODE_ENV = var.NODE_ENV
