@@ -1,5 +1,5 @@
 variable "project_prefix" {
-  type = string
+  type    = string
   default = "fw-contextual-layers"
 }
 
@@ -54,18 +54,18 @@ variable "git_sha" {
   type = string
 }
 variable "NODE_PATH" {
-  type = string
+  type    = string
   default = "app/src"
 }
 variable "NODE_ENV" {
-  type = string
+  type    = string
   default = "dev"
 }
 variable "CT_URL" {
-  type = string
+  type    = string
   default = "https://api.resourcewatch.org"
 }
 variable "API_VERSION" {
-  type = string
+  type    = string
   default = "v1"
 }

@@ -68,19 +68,19 @@ module "fargate_autoscaling" {
 data "template_file" "container_definition" {
   template = file("${path.root}/templates/container_definition.json.tmpl")
   vars = {
-    image          = "${module.app_docker_image.repository_url}:${local.container_tag}"
-    container_name = var.project_prefix
-    log_group      = aws_cloudwatch_log_group.default.name
-    aws_region     = var.region
-    container_port = var.container_port
-    PORT = var.container_port
-    NODE_PATH = var.NODE_PATH
-    NODE_ENV = var.NODE_ENV
-    CT_URL = var.CT_URL
-    LOCAL_URL = "http://127.0.0.1:${var.container_port}"
-    TEAMS_API_URL = "http://${data.terraform_remote_state.fw_core.outputs.public_url}/api/v1"
+    image                     = "${module.app_docker_image.repository_url}:${local.container_tag}"
+    container_name            = var.project_prefix
+    log_group                 = aws_cloudwatch_log_group.default.name
+    aws_region                = var.region
+    container_port            = var.container_port
+    PORT                      = "${var.container_port}"
+    NODE_PATH                 = var.NODE_PATH
+    NODE_ENV                  = var.NODE_ENV
+    CT_URL                    = var.CT_URL
+    LOCAL_URL                 = "http://127.0.0.1:${var.container_port}"
+    TEAMS_API_URL             = "http://${data.terraform_remote_state.fw_core.outputs.public_url}/api/v1"
     MONGO_PORT_27017_TCP_ADDR = data.terraform_remote_state.core.outputs.document_db_endpoint
-    API_VERSION = var.API_VERSION
+    API_VERSION               = var.API_VERSION
   }
 }
 

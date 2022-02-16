@@ -2,7 +2,6 @@
   "name": "${container_name}",
   "image": "${image}",
   "networkMode": "awsvpc",
-
   "environment": [
     {
       "name": "PORT",
@@ -40,8 +39,8 @@
   "secrets": [],
   "portMappings": [
     {
-      "containerPort": "${container_port}",
-      "hostPort": "${container_port}"
+      "containerPort": ${container_port},
+      "hostPort": ${container_port}
     }
   ],
   "logConfiguration": {
