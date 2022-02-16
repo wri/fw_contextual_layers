@@ -18,7 +18,7 @@ Dependencies on other Microservices:
 Start by cloning the repository from github to your execution environment
 
 ```
-git clone https://github.com/wri/fw_contextual_layers.git && cd fw-contextual-layers
+git clone https://github.com/wri/fw_contextual_layers.git && cd fw_contextual_layers
 ```
 
 After that, follow one of the instructions below:
