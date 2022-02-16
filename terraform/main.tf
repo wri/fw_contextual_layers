@@ -70,6 +70,8 @@ data "template_file" "container_definition" {
   vars = {
     image          = "${module.app_docker_image.repository_url}:${local.container_tag}"
     container_name = var.project_prefix
+    log_group      = aws_cloudwatch_log_group.default.name
+    aws_region     = var.region
     container_port = var.container_port
     PORT = var.container_port
     NODE_PATH = var.NODE_PATH
