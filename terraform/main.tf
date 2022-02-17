@@ -52,7 +52,7 @@ module "fargate_autoscaling" {
   listener_arn        = data.terraform_remote_state.fw_core.outputs.lb_listener_arn
   project_prefix      = var.project_prefix
   path_pattern        = ["/api/v1/contextual-layer*"]
-  priority            = 1
+  priority            = 5
 
   depends_on = [
     module.app_docker_image
