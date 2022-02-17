@@ -4,7 +4,6 @@ const koaLogger = require("koa-logger");
 const config = require("config");
 const loader = require("loader");
 const convert = require("koa-convert");
-const koaSimpleHealthCheck = require("koa-simple-healthcheck");
 const ErrorSerializer = require("serializers/error.serializer");
 const validate = require("koa-validate");
 const mongoose = require("mongoose");
@@ -60,7 +59,6 @@ app.use(async (ctx, next) => {
 });
 
 app.use(koaLogger());
-app.use(koaSimpleHealthCheck());
 
 app.use(async (ctx, next) => {
   await loggedInUserService.setLoggedInUser(ctx, logger);
