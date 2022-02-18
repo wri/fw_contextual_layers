@@ -18,8 +18,8 @@ module "app_docker_image" {
 }
 
 module "fargate_autoscaling" {
-  # source                       = "git::https://github.com/wri/gfw-terraform-modules.git//terraform/modules/fargate_autoscaling?ref=v0.5.1"
-  source                       = "./modules/fargate_autoscaling"
+  source                       = "git::https://github.com/wri/gfw-terraform-modules.git//terraform/modules/fargate_autoscaling_v2?ref=v0.5.5"
+  # source                       = "./modules/fargate_autoscaling"
   project                      = var.project_prefix
   tags                         = local.fargate_tags
   vpc_id                       = data.terraform_remote_state.core.outputs.vpc_id
@@ -51,8 +51,10 @@ module "fargate_autoscaling" {
   lb_target_group_arn = module.fargate_autoscaling.lb_target_group_arn
   listener_arn        = data.terraform_remote_state.fw_core.outputs.lb_listener_arn
   project_prefix      = var.project_prefix
-  path_pattern        = ["/api/v1/contextual-layer*"]
+  path_pattern        = ["/api/v1/fw_contextual_layers/healthcheck","/api/v1/contextual-layer*"]
   priority            = 5
+
+  health_check_path = "/api/v1/fw_contextual_layers/healthcheck"
 
   depends_on = [
     module.app_docker_image
