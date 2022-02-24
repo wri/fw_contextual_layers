@@ -11,7 +11,7 @@ Execution using Docker requires:
 - [Docker Compose](https://docs.docker.com/compose/)
 
 Dependencies on other Microservices:
-- [FW teams](https://github.com/gfw-api/fw-teams)
+- [FW teams](https://github.com/wri/fw_teams)
 
 ## Getting started
 
@@ -32,7 +32,7 @@ make up-and-build   # First time building Docker or you've made changes to the D
 make up             # When Docker has already been built and you're starting from where you left off
 ```
 
-The endpoints provided by this microservice should now be available: [localhost:3035](http://localhost:3035)
+The endpoints provided by this microservice should now be available: [localhost:3025](http://localhost:3025)
 
 2 - Run the following command to lint the project:
 
