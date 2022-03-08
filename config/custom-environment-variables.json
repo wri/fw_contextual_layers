@@ -3,7 +3,9 @@
     "port": "PORT"
   },
   "mongodb": {
-    "host": "MONGO_PORT_27017_TCP_ADDR"
+    "database": "DB_DATABASE",
+    "host": "MONGO_PORT_27017_TCP_ADDR",
+    "secret": "DB_SECRET"
   },
   "teamsAPI": {
     "url": "TEAMS_API_URL"

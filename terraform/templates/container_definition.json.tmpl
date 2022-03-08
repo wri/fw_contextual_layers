@@ -36,7 +36,12 @@
       "value": "${API_VERSION}"
     }
   ],
-  "secrets": [],
+  "secrets": [
+    {
+      "name": "DB_SECRET",
+      "valueFrom": "${db_secret_arn}"
+    }
+  ],
   "portMappings": [
     {
       "containerPort": ${container_port},
