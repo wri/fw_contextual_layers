@@ -42,6 +42,7 @@
     "prettier": "^2.5.1"
   },
   "dependencies": {
+    "@koa/cors": "^3.1.0",
     "@mapbox/tilelive": "^5.12.6",
     "axios": "^0.24.0",
     "bunyan": "^1.8.5",
