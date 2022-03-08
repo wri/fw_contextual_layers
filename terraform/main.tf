@@ -76,6 +76,7 @@ data "template_file" "container_definition" {
     LOCAL_URL                 = "http://127.0.0.1:${var.container_port}"
     TEAMS_API_URL             = "http://${data.terraform_remote_state.fw_core.outputs.public_url}/api/v1"
     MONGO_PORT_27017_TCP_ADDR = data.terraform_remote_state.core.outputs.document_db_endpoint
+    db_secret_arn             = data.terraform_remote_state.core.outputs.document_db_secrets_arn
     API_VERSION               = var.API_VERSION
   }
 }
