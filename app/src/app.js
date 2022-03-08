@@ -15,12 +15,20 @@ const koaBody = require("koa-body")({
 });
 const loggedInUserService = require("./services/LoggedInUserService");
 
-mongoose.Promise = Promise;
-const mongoUri = `mongodb://${config.get("mongodb.host")}:${config.get("mongodb.port")}/${config.get(
-  "mongodb.database"
-)}`;
+let dbSecret = config.get("mongodb.secret");
+if (typeof dbSecret === "string") {
+  dbSecret = JSON.parse(dbSecret);
+}
 
-mongoose.connect(mongoUri, err => {
+const mongoURL =
+  "mongodb://" +
+  `${dbSecret.username}:${dbSecret.password}` +
+  `@${config.get("mongodb.host")}:${config.get("mongodb.port")}` +
+  `/${config.get("mongodb.database")}`;
+
+mongoose.Promise = Promise;
+
+mongoose.connect(mongoURL, err => {
   if (err) {
     logger.error(err);
     throw new Error(err);
