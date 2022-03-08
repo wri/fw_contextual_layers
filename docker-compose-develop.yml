@@ -14,6 +14,8 @@ services:
       LOCAL_URL: http://127.0.0.1:3025
       TEAMS_API_URL: http://fw-teams-develop:3035/api/v1
       MONGO_PORT_27017_TCP_ADDR: mongo
+      DB_SECRET: '{ "username": "admin", "password": "password" }'
+      DB_DATABASE: fw_contextual_layer
       API_VERSION: v1
     volumes:
       - ./app:/opt/fw-contextual-layer/app
@@ -30,11 +32,20 @@ services:
     command: --smallfiles
     ports:
       - "27023:27017"
+    environment:
+      MONGO_INITDB_DATABASE: fw_contextual_layer
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_ROOT_USERNAME: admin
     volumes:
-      - $HOME/docker/data/fw-contextual-layer:/data/db
+      - ./data/mongo/001_users.js:/docker-entrypoint-initdb.d/001_users.js:ro
+      - fw-contextual-layer-mongodb-data:/data/db
     restart: always
     networks:
       - gfw-contextual-layers-network
+
+volumes:
+  fw-contextual-layer-mongodb-data:
+
 networks:
   gfw-network:
     name: gfw-network
