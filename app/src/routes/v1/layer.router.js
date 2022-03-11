@@ -68,7 +68,7 @@ class Layer {
       team = await TeamService.getTeam(owner.id);
     } catch (e) {
       logger.error(e);
-      ctx.throw(500, `Team retrieval failed. ${config.get("teamsAPI.url")} ${owner.id}`);
+      ctx.throw(500, `Team retrieval failed. ${e.message} ${config.get("teamsAPI.url")} ${owner.id}`);
     }
     const isManager = team && team.managers && team.managers.some(manager => manager.id === ctx.request.body.user.id);
     if (isManager) {
