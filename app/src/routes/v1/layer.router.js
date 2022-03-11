@@ -8,6 +8,7 @@ const LayerValidator = require("validators/layer.validator");
 const TeamService = require("services/team.service");
 const lossLayerProvider = require("lossLayer.provider");
 const TileNotFoundError = require("TileNotFoundError");
+const config = require("config");
 
 const router = new Router({
   prefix: "/contextual-layer"
@@ -67,7 +68,7 @@ class Layer {
       team = await TeamService.getTeam(owner.id);
     } catch (e) {
       logger.error(e);
-      ctx.throw(500, "Team retrieval failed.");
+      ctx.throw(500, `Team retrieval failed. ${config.get("teamsAPI.url")}`);
     }
     const isManager = team && team.managers && team.managers.some(manager => manager.id === ctx.request.body.user.id);
     if (isManager) {
