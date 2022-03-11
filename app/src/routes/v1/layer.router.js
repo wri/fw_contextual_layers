@@ -8,7 +8,7 @@ const LayerValidator = require("validators/layer.validator");
 const TeamService = require("services/team.service");
 const lossLayerProvider = require("lossLayer.provider");
 const TileNotFoundError = require("TileNotFoundError");
-const loggedInUserService = require("./LoggedInUserService");
+const loggedInUserService = require("services/LoggedInUserService");
 const config = require("config");
 
 const router = new Router({
