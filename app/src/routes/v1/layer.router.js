@@ -8,6 +8,7 @@ const LayerValidator = require("validators/layer.validator");
 const TeamService = require("services/team.service");
 const lossLayerProvider = require("lossLayer.provider");
 const TileNotFoundError = require("TileNotFoundError");
+const loggedInUserService = require("./LoggedInUserService");
 const config = require("config");
 
 const router = new Router({
@@ -68,7 +69,7 @@ class Layer {
       team = await TeamService.getTeam(owner.id);
     } catch (e) {
       logger.error(e);
-      ctx.throw(500, `Team retrieval failed. ${e.message} ${config.get("teamsAPI.url")} ${owner.id}`);
+      ctx.throw(500, `Team retrieval failed. ${loggedInUserService.token} ${e.message} ${config.get("teamsAPI.url")} ${owner.id}`);
     }
     const isManager = team && team.managers && team.managers.some(manager => manager.id === ctx.request.body.user.id);
     if (isManager) {
