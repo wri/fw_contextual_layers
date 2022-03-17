@@ -26,6 +26,15 @@ services:
       - gfw-contextual-layers-network
     command: node node_modules/.bin/grunt --gruntfile app/Gruntfile.js
 
+  docs:
+    build: .
+    ports:
+      - "30250:30250"
+    container_name: fw-contextual-layer-docs
+    volumes:
+      - ./docs:/opt/fw-contextual-layer/docs
+    command: yarn run docs -l 30250
+
   mongo:
     image: mongo:3.4
     container_name: fw-contextual-layer-mongo-develop
