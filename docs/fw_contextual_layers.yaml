@@ -20,6 +20,12 @@ paths:
         '401':
           $ref: '#/components/responses/Error'
       operationId: get-contextual-layer
+      parameters:
+        - schema:
+            type: boolean
+          in: query
+          name: enabled
+          description: Return all enabled contextual layers
     post:
       summary: Create contextual layer
       operationId: post-contextual-layer
