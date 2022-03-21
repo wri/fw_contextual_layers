@@ -10,7 +10,7 @@
     "port": 3025
   },
   "mongodb": {
-    "database": "contextual-layers",
+    "database": "layers",
     "host": "localhost",
     "port": "27017"
   },
