@@ -15,6 +15,7 @@ const koaBody = require("koa-body")({
   textLimit: "50mb"
 });
 const loggedInUserService = require("./services/LoggedInUserService");
+const Sentry = require("@sentry/node");
 
 let dbSecret = config.get("mongodb.secret");
 if (typeof dbSecret === "string") {
@@ -38,6 +39,21 @@ mongoose.connect(mongoURL, err => {
 
 const app = new Koa();
 
+/**
+ * Sentry
+ */
+Sentry.init({ dsn: "https://23078bc49f3e4aa5a93e6c7610707bfc@o163691.ingest.sentry.io/6262295" });
+
+app.on("error", (err, ctx) => {
+  Sentry.withScope(function (scope) {
+    scope.addEventProcessor(function (event) {
+      return Sentry.Handlers.parseRequest(event, ctx.request);
+    });
+    Sentry.captureException(err);
+  });
+});
+/** */
+
 app.use(convert.back(cors()));
 app.use(convert(koaBody));
 validate(app);
@@ -55,6 +71,7 @@ app.use(async (ctx, next) => {
     }
     ctx.status = error.status || ctx.status || 500;
     if (ctx.status >= 500) {
+      Sentry.captureException(error); // send error to sentry
       logger.error(error);
     } else {
       logger.info(error);

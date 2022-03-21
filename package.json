@@ -44,6 +44,7 @@
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "@mapbox/tilelive": "^5.12.6",
+    "@sentry/node": "^6.18.2",
     "axios": "^0.24.0",
     "bunyan": "^1.8.5",
     "canvas": "^1.6.6",
