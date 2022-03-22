@@ -212,4 +212,9 @@ router.post(
 );
 router.delete("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteLayer);
 router.get("/loss-layer/:startYear/:endYear/:z/:x/:y.png", LayerValidator.tile, Layer.hansenLayer);
+router.get("/fail", ctx => {
+  ctx.status = 500;
+  throw new Error("Test Fail");
+});
+
 module.exports = router;
