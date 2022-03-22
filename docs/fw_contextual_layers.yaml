@@ -25,9 +25,15 @@ paths:
             type: boolean
           in: query
           name: enabled
-          description: Return all enabled contextual layers
+          description: 'Filter by the enabled attribute, to retrieve only enabled or disabled layers.'
+      description: |-
+        This endpoint allows you to list contextual layers and their properties. If successful, the returned response will include a list of contextual layers in the data index of the response body, including contextual layers that match one of the following conditions:
+        - the contextual layer is public - isPublic attribute is set to true;
+        - the contextual layer is owned by the user making the request - owner.id attribute matches the user id in the token provided in the request;
+        - the contextual layer is owned by a team you belong to - the contextual layer id is part of the layers of the team the user making the request belongs to.
+        The result is **not** paginated, so you will get all layers that match at least one of the conditions defined above.
     post:
-      summary: Create contextual layer
+      summary: Create contextual layer for a user
       operationId: post-contextual-layer
       responses:
         '200':
@@ -36,36 +42,6 @@ paths:
           $ref: '#/components/responses/Error'
       requestBody:
         $ref: '#/components/requestBodies/Layer'
-  '/contextual-layer/{layerId}':
-    parameters:
-      - schema:
-          type: string
-        name: layerId
-        in: path
-        required: true
-    patch:
-      summary: Update contextual layer
-      operationId: patch-contextual-layer
-      responses:
-        '200':
-          $ref: '#/components/responses/Layer'
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-      description: ''
-      requestBody:
-        $ref: '#/components/requestBodies/Layer'
-    delete:
-      summary: Delete contextual layer
-      operationId: delete-contextual-layer
-      responses:
-        '204':
-          description: No Content
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
   '/contextual-layer/team/{teamId}':
     post:
       summary: Create contextual layer for a team
@@ -85,9 +61,49 @@ paths:
         name: teamId
         in: path
         required: true
+  '/contextual-layer/{layerId}':
+    parameters:
+      - schema:
+          type: string
+        name: layerId
+        in: path
+        required: true
+    patch:
+      summary: Update contextual layer
+      operationId: patch-contextual-layer
+      responses:
+        '200':
+          $ref: '#/components/responses/Layer'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+      description: |-
+        To update the details of an existing contextual layer (either created for a user or a team), you should issue a PATCH request. This endpoint is available to all registered API users.
+
+        Updating contextual layers also has some caveats:
+        - you can only update the enabled attribute of contextual layers you own, or contextual layers that belong to a team that you manage - if one of these conditions is not met, the enabled attribute value is kept as is.
+        - you can only update the isPublic attribute of contextual layers if you are an ADMIN user and thecontextual layer you are trying to update is owned by a user (not by a team) - in all other cases, the isPublic attribute value is kept as is.
+      requestBody:
+        $ref: '#/components/requestBodies/Layer'
+    delete:
+      summary: Delete contextual layer
+      operationId: delete-contextual-layer
+      responses:
+        '204':
+          description: No Content
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+      description: |-
+        Use this endpoint if you'd like to delete a contextual layer from the RW API. In order to delete a contextual layer, you must either be an ADMIN user or, alternatively, meet all of the following conditions:
+        - the contextual layer's isPublic property must be set to false.
+        - if the contextual layer is owned by a user, you must be the owner of the contextual layer.
+        - if the contextual layer is owned by a team, you must be one of the managers of the team that owns the contextual layer.
   '/contextual-layer/loss-layer/{startYear}/{endYear}/{z}/{x}/{y}.png':
     get:
-      summary: Get loss layer image
+      summary: Get loss layer tiles
       tags: []
       responses:
         '200':
@@ -102,7 +118,7 @@ paths:
         '404':
           description: Not Found
       operationId: get-loss-layer-image
-      description: Retrieving hansen tile png
+      description: 'Use this endpoint to retrieve PNG image corresponding to the loss layer tiles for the `(x,y,z)` tuple (where `x` represents latitude, `y` longitude, and `z` the zoom level) for loss layers for the interval of years from `startYear` to `endYear`.'
     parameters:
       - schema:
           type: string
@@ -137,47 +153,66 @@ paths:
         '200':
           $ref: '#/components/responses/Healthcheck'
       operationId: get-fw_api-healthcheck
+      security: []
 components:
   schemas:
     Layer:
       title: Layer
       type: object
       properties:
+        id:
+          type: string
+          description: Unique Id of the contextual layer. Auto-generated on creation. Cannot be modified by users.
+          readOnly: true
+        name:
+          type: string
+          description: Name of the contextual layer.
+        description:
+          type: string
+          description: Description of the contextual layer.
+        url:
+          type: string
+          description: URL to fetch tiles for the contextual layer.
         isPublic:
           type: boolean
           default: false
-        name:
+          description: If the contextual layer is publicly accessible.
+        thumbnailUrl:
           type: string
-        url:
-          type: string
-        description:
-          type: string
+          description: URL of a example thumbnail of the rendered layer.
+        enabled:
+          type: boolean
+          default: false
+          description: If the contextual layer is enabled.
         owner:
           type: object
           required:
             - id
             - type
+          description: Object containing information about the owner of the contextual layer.
           properties:
             id:
               type: string
-              description: Owner ObjectId
+              description: Id of the user or team (according to the value of the `owner.type` attribute) owner of the contextual layer.
               readOnly: true
             type:
               type: string
+              description: Type of the owner of the layer - can be `USER` or `TEAM`.
+              enum:
+                - USER
+                - TEAM
               readOnly: true
           readOnly: true
-        enabled:
-          type: boolean
-          default: false
         createdAt:
           type: string
           format: date-time
+          description: Automatically maintained date of when the contextual layer was created. Cannot be modified by users.
           readOnly: true
       required:
-        - isPublic
+        - id
         - name
         - url
-        - owner
+        - isPublic
         - enabled
         - createdAt
   securitySchemes:
@@ -189,75 +224,191 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Layer'
-          examples: {}
+            type: object
+            properties:
+              name:
+                type: string
+              url:
+                type: string
+              description:
+                type: string
+              isPublic:
+                type: boolean
+                default: false
+              thumbnailUrl:
+                type: string
+              enabled:
+                type: boolean
+                default: false
+            required:
+              - name
+              - url
+          examples:
+            Layer:
+              value:
+                name: Test
+                url: 'https://example.com/contextual-layer/{z}/{x}/{y}.png'
   responses:
     Layer:
       description: Layer response
       content:
         application/json:
           schema:
+            description: ''
             type: object
+            x-examples:
+              example-1:
+                data:
+                  type: contextual-layers
+                  id: 59a979235f17780012d7dfcf
+                  attributes:
+                    isPublic: true
+                    name: layers.treeCoverLoss2015
+                    url: 'https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png'
+                    enabled: true
+                    owner:
+                      type: USER
+                    createdAt: '2017-09-01T15:13:39.502Z'
             properties:
               data:
                 type: object
+                required:
+                  - type
+                  - id
+                  - attributes
                 properties:
-                  id:
-                    type: string
                   type:
                     type: string
-                  attribute:
-                    $ref: '#/components/schemas/Layer'
+                  id:
+                    type: string
+                  attributes:
+                    type: object
+                    required:
+                      - isPublic
+                      - name
+                      - url
+                      - enabled
+                      - owner
+                      - createdAt
+                    properties:
+                      isPublic:
+                        type: boolean
+                      name:
+                        type: string
+                      url:
+                        type: string
+                      enabled:
+                        type: boolean
+                      owner:
+                        type: object
+                        required:
+                          - type
+                        properties:
+                          type:
+                            type: string
+                            enum:
+                              - USER
+                              - TEAM
+                      createdAt:
+                        type: string
+                        format: date-time
+            required:
+              - data
           examples:
             Layer:
               value:
                 data:
-                  id: string
-                  type: string
-                  attribute:
-                    isPublic: false
-                    name: string
-                    url: string
-                    description: string
+                  type: contextual-layers
+                  id: 59a979235f17780012d7dfcf
+                  attributes:
+                    isPublic: true
+                    name: layers.treeCoverLoss2015
+                    url: 'https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png'
+                    enabled: true
                     owner:
-                      id: string
-                      type: string
-                    enabled: false
-                    createdAt: '2019-08-24T14:15:22Z'
+                      type: USER
+                    createdAt: '2017-09-01T15:13:39.502Z'
     Layers:
       description: Example response
       content:
         application/json:
           schema:
+            description: ''
             type: object
+            x-examples:
+              example-1:
+                data:
+                  - type: contextual-layers
+                    id: 59a979235f17780012d7dfcf
+                    attributes:
+                      isPublic: true
+                      name: layers.treeCoverLoss2015
+                      url: 'https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png'
+                      enabled: true
+                      owner:
+                        type: USER
+                      createdAt: '2017-09-01T15:13:39.502Z'
             properties:
               data:
                 type: array
+                uniqueItems: true
                 items:
                   type: object
                   properties:
-                    id:
-                      type: string
                     type:
                       type: string
+                    id:
+                      type: string
                     attributes:
-                      $ref: '#/components/schemas/Layer'
+                      type: object
+                      properties:
+                        isPublic:
+                          type: boolean
+                        name:
+                          type: string
+                        url:
+                          type: string
+                        enabled:
+                          type: boolean
+                        owner:
+                          type: object
+                          required:
+                            - type
+                          properties:
+                            type:
+                              type: string
+                              enum:
+                                - USER
+                                - TEAM
+                        createdAt:
+                          type: string
+                          format: date-time
+                      required:
+                        - isPublic
+                        - name
+                        - url
+                        - enabled
+                        - owner
+                        - createdAt
+                  required:
+                    - type
+                    - id
+            required:
+              - data
           examples:
             Layers:
               value:
                 data:
-                  - id: string
-                    type: string
+                  - type: contextual-layers
+                    id: 59a979235f17780012d7dfcf
                     attributes:
-                      isPublic: false
-                      name: string
-                      url: string
-                      description: string
+                      isPublic: true
+                      name: layers.treeCoverLoss2015
+                      url: 'https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png'
+                      enabled: true
                       owner:
-                        id: string
-                        type: string
-                      enabled: false
-                      createdAt: '2019-08-24T14:15:22Z'
+                        type: USER
+                      createdAt: '2017-09-01T15:13:39.502Z'
     Error:
       description: Error Response
       content:
@@ -293,3 +444,5 @@ components:
               uptime:
                 type: number
           examples: {}
+security:
+  - Authorization: []
