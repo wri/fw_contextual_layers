@@ -23,11 +23,12 @@ paths:
       parameters:
         - schema:
             type: boolean
+            default: 'false'
           in: query
           name: enabled
           description: 'Filter by the enabled attribute, to retrieve only enabled or disabled layers.'
       description: |-
-        This endpoint allows you to list contextual layers and their properties. If successful, the returned response will include a list of contextual layers in the data index of the response body, including contextual layers that match one of the following conditions:
+        This endpoint allows you to list contextual layers and their properties. If successful, the returned response will include a list of contextual layers in the `data` index of the response body, including contextual layers that match one of the following conditions:
         - the contextual layer is public - isPublic attribute is set to true;
         - the contextual layer is owned by the user making the request - owner.id attribute matches the user id in the token provided in the request;
         - the contextual layer is owned by a team you belong to - the contextual layer id is part of the layers of the team the user making the request belongs to.
@@ -97,8 +98,8 @@ paths:
         '404':
           $ref: '#/components/responses/Error'
       description: |-
-        Use this endpoint if you'd like to delete a contextual layer from the RW API. In order to delete a contextual layer, you must either be an ADMIN user or, alternatively, meet all of the following conditions:
-        - the contextual layer's isPublic property must be set to false.
+        Use this endpoint if you'd like to delete a contextual layer from the RW API. In order to delete a contextual layer, you must either be an `ADMIN` user or, alternatively, meet all of the following conditions:
+        - the contextual layer's `isPublic` property must be set to `false`.
         - if the contextual layer is owned by a user, you must be the owner of the contextual layer.
         - if the contextual layer is owned by a team, you must be one of the managers of the team that owns the contextual layer.
   '/contextual-layer/loss-layer/{startYear}/{endYear}/{z}/{x}/{y}.png':
