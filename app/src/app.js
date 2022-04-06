@@ -57,10 +57,10 @@ app.on("error", (err, ctx) => {
 });
 /** */
 
-app.use(function* cacheControl(next) {
-  yield* next;
-
-  this.set("Cache-Control", "private");
+app.use((ctx, next) => {
+  return next().then(function () {
+    ctx.set("Cache-Control", "private");
+  });
 });
 app.use(convert.back(cors()));
 app.use(convert(koaBody));
