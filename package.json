@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint app --fix",
-    "docs": "serve docs"
+    "docs": "serve docs",
+    "build": "babel app/src --extensions .js,.ts -d dist",
+    "start": "yarn run build && node dist/app.js",
+    "restart": "rimraf dist && yarn run start",
+    "dev": "nodemon --exec yarn run restart"
   },
   "keywords": [],
   "author": {

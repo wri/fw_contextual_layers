@@ -19,12 +19,13 @@ services:
       API_VERSION: v1
     volumes:
       - ./app:/opt/fw-contextual-layer/app
+      - ./nodemon.json:/opt/fw-contextual-layer/nodemon.json
     depends_on:
       - mongo
     networks:
       - gfw-network
       - gfw-contextual-layers-network
-    command: node node_modules/.bin/grunt --gruntfile app/Gruntfile.js
+    command: yarn dev
 
   docs:
     build: .

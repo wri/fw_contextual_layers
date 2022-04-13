@@ -21,8 +21,11 @@ COPY config /opt/$NAME/config
 WORKDIR /opt/$NAME
 
 COPY ./app /opt/$NAME/app
+COPY ./.babelrc /opt/$NAME/.babelrc
+COPY ./tsconfig.json /opt/$NAME/tsconfig.json
+RUN yarn build
 
 # Tell Docker we are going to use this port
 EXPOSE 3025
 
-CMD node app/index.js
+CMD ["node", "dist/app.js"]
