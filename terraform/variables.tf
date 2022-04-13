@@ -53,10 +53,6 @@ variable "auto_scaling_min_capacity" {
 variable "git_sha" {
   type = string
 }
-variable "NODE_PATH" {
-  type    = string
-  default = "app/src"
-}
 variable "NODE_ENV" {
   type    = string
   default = "dev"

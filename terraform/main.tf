@@ -70,7 +70,6 @@ data "template_file" "container_definition" {
     aws_region                = var.region
     container_port            = var.container_port
     PORT                      = "${var.container_port}"
-    NODE_PATH                 = var.NODE_PATH
     NODE_ENV                  = var.NODE_ENV
     CT_URL                    = var.CT_URL
     LOCAL_URL                 = "http://127.0.0.1:${var.container_port}"
