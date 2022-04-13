@@ -8,7 +8,7 @@ RUN apt-get update -y && apt-get upgrade -y
 RUN apt-get install -y --no-install-recommends bash git openssh-client openssh-server python \
      libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
 
-RUN yarn global add grunt-cli bunyan
+RUN yarn global add bunyan
 
 RUN mkdir -p /opt/$NAME
 COPY package.json /opt/$NAME/package.json
