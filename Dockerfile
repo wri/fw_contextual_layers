@@ -1,4 +1,4 @@
-FROM node:11-stretch
+FROM node:10-stretch
 MAINTAINER info@vizzuality.com
 
 ENV NAME fw-contextual-layer
