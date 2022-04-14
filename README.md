@@ -4,7 +4,9 @@ This repository includes the forest watcher context layers microservice for the 
 
 ## Dependencies
 
-The FW Context Layer microservice is built using [Node.js](https://nodejs.org/en/), and can be executed using Docker.
+The FW Context Layer microservice is built using [Node.js](https://nodejs.org/en/), and can be executed using Docker.\
+_Currently running Node v10, this cannot be updated due to a dependency to [node-canvas@1.6.6](https://www.npmjs.com/package/canvas/v/1.6.6) which is [incompatible](https://github.com/Automattic/node-canvas/issues/1511) with Node v12 and above.
+All workarounds have been tried._
 
 Execution using Docker requires:
 - [Docker](https://www.docker.com/)
@@ -30,6 +32,7 @@ After that, follow one of the instructions below:
 ```shell
 make up-and-build   # First time building Docker or you've made changes to the Dockerfile
 make up             # When Docker has already been built and you're starting from where you left off
+make logs           # To view the logs for the app
 ```
 
 The endpoints provided by this microservice should now be available:
@@ -48,13 +51,12 @@ make lint
 make down
 ```
 
-## Testing
+### Testing
 
-### Using Docker
-
-Follow the instruction above for setting up the runtime environment for Docker execution, then run:
+Follow the instruction above for setting up the runtime environment for Docker execution, then run the following to view the test logs:
 ```shell
-make test-and-build
+make up
+make tests
 ```
 
 ## Docs
