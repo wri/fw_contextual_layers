@@ -5,7 +5,7 @@ This repository includes the forest watcher context layers microservice for the 
 ## Dependencies
 
 The FW Context Layer microservice is built using [Node.js](https://nodejs.org/en/), and can be executed using Docker.\
-_Currently running Node v11, this cannot be updated due to a dependency to [node-canvas@1.6.6](https://www.npmjs.com/package/canvas/v/1.6.6) which is [incompatible](https://github.com/Automattic/node-canvas/issues/1511) with Node v12 and above.
+_Currently running Node v10, this cannot be updated due to a dependency to [node-canvas@1.6.6](https://www.npmjs.com/package/canvas/v/1.6.6) which is [incompatible](https://github.com/Automattic/node-canvas/issues/1511) with Node v12 and above.
 All workarounds have been tried._
 
 Execution using Docker requires:
