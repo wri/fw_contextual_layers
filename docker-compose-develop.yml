@@ -26,6 +26,28 @@ services:
       - gfw-contextual-layers-network
     command: yarn dev
 
+  test:
+    build: .
+    container_name: fw-contextual-layer-test
+    environment:
+      PORT: 3025
+      NODE_ENV: test
+      SUPPRESS_NO_CONFIG_WARNING: "true"
+      CT_URL: http://127.0.0.1:9000
+      LOCAL_URL: http://127.0.0.1:3025
+      TEAMS_API_URL: http://fw-teams-develop:3035/api/v1
+      MONGO_PORT_27017_TCP_ADDR: mongo
+      DB_SECRET: '{ "username": "admin", "password": "password" }'
+      DB_DATABASE: fw_contextual_layer
+      API_VERSION: v1
+    depends_on:
+      - mongo
+    volumes:
+      - ./app:/opt/fw-contextual-layer/app
+      - ./nodemon.json:/opt/fw-contextual-layer/nodemon.json
+      - ./jest.config.js:/opt/fw-contextual-layer/jest.config.js
+    command: yarn test
+
   docs:
     build: .
     ports:
