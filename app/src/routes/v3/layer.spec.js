@@ -166,7 +166,7 @@ describe("Delete a layer", function () {
 
     const teamId = new ObjectId();
     const layer = await createTeamLayer(teamId);
-    
+
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
@@ -181,12 +181,11 @@ describe("Delete a layer", function () {
       ]);
 
     const response = await requester
-        .delete(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send();
-    
-        expect(response.status).toBe(204);
+      .delete(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send();
 
+    expect(response.status).toBe(204);
   });
 
   it("Deletes a team layer if the user is a administrator of the team", async function () {
@@ -194,7 +193,7 @@ describe("Delete a layer", function () {
 
     const teamId = new ObjectId();
     const layer = await createTeamLayer(teamId);
-    
+
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
@@ -209,13 +208,11 @@ describe("Delete a layer", function () {
       ]);
 
     const response = await requester
-        .delete(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send();
-    
-        expect(response.status).toBe(204);
+      .delete(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send();
 
-
+    expect(response.status).toBe(204);
   });
 
   it("Fails to delete a team layer if the user is not a manager/administrator", async function () {
@@ -223,7 +220,7 @@ describe("Delete a layer", function () {
 
     const teamId = new ObjectId();
     const layer = await createTeamLayer(teamId);
-    
+
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
@@ -238,17 +235,15 @@ describe("Delete a layer", function () {
       ]);
 
     const response = await requester
-        .delete(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send();
-    
-        expect(response.status).toBe(403);
-        expect(response.body).toHaveProperty("errors");
-        expect(response.body.errors.length).toBe(1);
-        expect(response.body.errors[0]).toHaveProperty("status", 403);
-        expect(response.body.errors[0]).toHaveProperty("detail", "Forbidden");
+      .delete(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send();
 
-
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("errors");
+    expect(response.body.errors.length).toBe(1);
+    expect(response.body.errors[0]).toHaveProperty("status", 403);
+    expect(response.body.errors[0]).toHaveProperty("detail", "Forbidden");
   });
 
   it("Deletes a team layer if the user is an ADMIN", async function () {
@@ -256,7 +251,7 @@ describe("Delete a layer", function () {
 
     const teamId = new ObjectId();
     const layer = await createTeamLayer(teamId);
-    
+
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
@@ -271,12 +266,11 @@ describe("Delete a layer", function () {
       ]);
 
     const response = await requester
-        .delete(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send();
-    
-        expect(response.status).toBe(204);
+      .delete(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send();
 
+    expect(response.status).toBe(204);
   });
 
   afterEach(async function () {
