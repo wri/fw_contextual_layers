@@ -9,6 +9,7 @@ const TeamService = require("services/team.service");
 const lossLayerProvider = require("lossLayer.provider");
 const TileNotFoundError = require("TileNotFoundError");
 const V3TeamService = require("../../services/v3TeamService");
+const V3LayerService = require("../../services/v3LayerService");
 
 const router = new Router({
   prefix: "/contextual-layer"
@@ -32,7 +33,11 @@ class Layer {
     // get list of user teams
     let teams = await V3TeamService.getUserTeams(ctx.request.body.user.id);
     let matchingTeam = teams.find(obj => obj.id === owner.id);
-    const isManager = matchingTeam && matchingTeam.attributes && (matchingTeam.attributes.userRole.toString() === "manager" || matchingTeam.attributes.userRole.toString() === "administrator");
+    const isManager =
+      matchingTeam &&
+      matchingTeam.attributes &&
+      (matchingTeam.attributes.userRole.toString() === "manager" ||
+        matchingTeam.attributes.userRole.toString() === "administrator");
     if (isManager) {
       let layer = null;
       try {
@@ -54,7 +59,76 @@ class Layer {
     } else {
       ctx.throw(403, "Only team managers can create team layers.");
     }
-    ctx.status = 200
+    ctx.status = 200;
+  }
+
+  static async patchLayer(ctx) {
+    logger.info("Patch layer by id");
+    const { layerId } = ctx.params;
+    const { body } = ctx.request;
+    let layer = null;
+    try {
+      layer = await LayerModel.findOne({ _id: layerId });
+      if (!layer) ctx.throw(404, "Layer not found");
+    } catch (e) {
+      logger.error(e);
+      ctx.throw(500, "Layer retrieval failed.");
+    }
+    let team = null;
+    if (layer.owner.type === LayerService.type.TEAM) {
+      try {
+        team = await TeamService.getTeam(layer.owner.id);
+      } catch (e) {
+        logger.error(e);
+        ctx.throw(500, "Team retrieval failed.");
+      }
+    }
+    const enabled = LayerService.getEnabled(layer, body, team);
+    const isPublic = LayerService.updateIsPublic(layer, body);
+    layer = Object.assign(layer, body, { isPublic, enabled });
+    try {
+      await layer.save();
+    } catch (e) {
+      logger.error("Layer patch save failed", e);
+      ctx.throw(500, "Layer update failed.");
+    }
+
+    ctx.body = LayerSerializer.serialize(layer);
+  }
+
+  static async deleteLayer(ctx) {
+    const { layerId } = ctx.params;
+    logger.info(`Delete layer with id ${layerId}`);
+    let layer = null;
+    try {
+      layer = await LayerModel.findOne({ _id: layerId });
+      if (!layer) ctx.throw(404, "Layer not found");
+    } catch (e) {
+      logger.error(e);
+      ctx.throw(500, "Layer retrieval failed.");
+    }
+    let teamUsers = [];
+    if (layer.owner.type === LayerService.type.TEAM) {
+      try {
+        teamUsers = await V3TeamService.getTeamUsers(layer.owner.id);
+      } catch (e) {
+        logger.error(e);
+        ctx.throw(500, "Team users retrieval failed.");
+      }
+    }
+    const hasPermission = await V3LayerService.canDeleteLayer(layer, ctx.request.body.user, teamUsers);
+    if (hasPermission) {
+      try {
+        await LayerModel.remove({ _id: layerId });
+      } catch (e) {
+        logger.error(e);
+        ctx.throw(500, "Layer deletion failed.");
+      }
+    } else {
+      ctx.throw(403, "Forbidden");
+    }
+    ctx.body = "";
+    ctx.status = 204;
   }
 }
 
@@ -74,6 +148,7 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
   await next();
 };
 
+router.patch("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.patch, Layer.patchLayer);
 router.post(
   "/team/:teamId",
   isAuthenticatedMiddleware,
@@ -81,5 +156,6 @@ router.post(
   LayerValidator.create,
   Layer.createTeamLayer
 );
+router.delete("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteLayer);
 
 module.exports = router;
