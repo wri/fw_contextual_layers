@@ -74,17 +74,17 @@ class Layer {
       logger.error(e);
       ctx.throw(500, "Layer retrieval failed.");
     }
-    let team = null;
-    if (layer.owner.type === LayerService.type.TEAM) {
+    let teamUsers = null;
+    if (layer.owner.type === V3LayerService.type.TEAM) {
       try {
-        team = await TeamService.getTeam(layer.owner.id);
+        teamUsers = await V3TeamService.getTeamUsers(layer.owner.id);
       } catch (e) {
         logger.error(e);
-        ctx.throw(500, "Team retrieval failed.");
+        ctx.throw(500, "Team users retrieval failed.");
       }
     }
-    const enabled = LayerService.getEnabled(layer, body, team);
-    const isPublic = LayerService.updateIsPublic(layer, body);
+    const enabled = V3LayerService.getEnabled(layer, body, teamUsers);
+    const isPublic = V3LayerService.updateIsPublic(layer, body);
     layer = Object.assign(layer, body, { isPublic, enabled });
     try {
       await layer.save();
@@ -94,6 +94,8 @@ class Layer {
     }
 
     ctx.body = LayerSerializer.serialize(layer);
+    ctx.status = 204;
+
   }
 
   static async deleteLayer(ctx) {

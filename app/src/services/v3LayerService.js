@@ -16,8 +16,14 @@ class V3LayerService {
     return data.user.role === "ADMIN" && layer.owner.type === V3LayerService.type.USER ? data.isPublic : layer.isPublic;
   }
 
-  static getEnabled(layer, data, team) {
-    return !team || team.managers.some(manager => manager.id === data.user.id) ? data.enabled : layer.enabled;
+  static getEnabled(layer, data, teamUsers) {
+    let manager = null;
+    if(teamUsers) manager = teamUsers.find(
+      teamUser => teamUser.attributes.userId.toString() === data.user.id.toString() &&
+        (teamUser.attributes.role === "manager" || teamUser.attributes.role === "administrator")
+      );
+      console.log(teamUsers, manager)
+    return !teamUsers || manager ? data.enabled : layer.enabled;
   }
 
   static create(data, owner) {

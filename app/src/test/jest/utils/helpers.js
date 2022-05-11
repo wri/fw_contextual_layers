@@ -25,7 +25,24 @@ const createTeamLayer = async (teamId) => {
 
 }
 
+const createUserLayer = async (userId) => {
+  const layer = new Layer({
+    name: "layer",
+    url: "url",
+    owner: {
+      id: userId,
+      type: "USER"
+    },
+    enabled: true,
+    isPublic: false
+  });
+
+  return await layer.save();
+
+}
+
 module.exports = {
   mockGetUserFromToken,
-  createTeamLayer
+  createTeamLayer,
+  createUserLayer
 };
