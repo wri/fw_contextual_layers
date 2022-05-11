@@ -43,9 +43,10 @@ class V3LayerService {
       case V3LayerService.type.TEAM: {
         // find user in team and check if they're a manager/administrator
         let manager = teamUsers.find(
-          teamUser => teamUser.attributes.userId.toString() === user.id.toString() &&
+          teamUser =>
+            teamUser.attributes.userId.toString() === user.id.toString() &&
             (teamUser.attributes.role === "manager" || teamUser.attributes.role === "administrator")
-          );
+        );
         if (!manager) return false;
         else return true;
       }
