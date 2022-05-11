@@ -6,8 +6,8 @@ const UserMiddleware = require("middleware/user.middleware");
 const LayerService = require("services/layer.service");
 const LayerValidator = require("validators/layer.validator");
 const TeamService = require("services/team.service");
-const lossLayerProvider = require("lossLayer.provider");
-const TileNotFoundError = require("TileNotFoundError");
+//const lossLayerProvider = require("lossLayer.provider");
+//const TileNotFoundError = require("TileNotFoundError");
 const V3TeamService = require("../../services/v3TeamService");
 const V3LayerService = require("../../services/v3LayerService");
 
@@ -95,7 +95,6 @@ class Layer {
 
     ctx.body = LayerSerializer.serialize(layer);
     ctx.status = 204;
-
   }
 
   static async deleteLayer(ctx) {

@@ -11,144 +11,137 @@ const { createTeamLayer, createUserLayer } = require("../../test/jest/utils/help
 const requester = getTestServer();
 
 describe("Create a team layer", function () {
-    beforeEach(async function () {
-        if (process.env.NODE_ENV !== "test") {
-            throw Error(
-                `Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`
-            );
+  beforeEach(async function () {
+    if (process.env.NODE_ENV !== "test") {
+      throw Error(
+        `Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`
+      );
+    }
+
+    await Layer.deleteMany({}).exec();
+  });
+
+  it('Create layer as an anonymous user should return an "Not logged" error with matching 401 HTTP code', async function () {
+    const response = await requester.post(`/v3/contextual-layer/team/1`).send();
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty("errors");
+    expect(response.body.errors.length).toBe(1);
+    expect(response.body.errors[0]).toHaveProperty("status", 401);
+    expect(response.body.errors[0]).toHaveProperty("detail", "Unauthorized");
+  });
+
+  it("Creates a team layer if the user is a manager of the team", async function () {
+    mockGetUserFromToken(USERS.USER);
+
+    const teamId = new ObjectId();
+    const userId = USERS.USER.id;
+
+    const layer = {
+      name: "layer",
+      url: "url",
+      owner: {
+        id: userId,
+        type: "owner type"
+      },
+      enabled: true
+    };
+
+    nock(config.get("v3teamsAPI.url"))
+      .get(`/teams/user/${USERS.USER.id}`)
+      .reply(200, [
+        {
+          id: teamId,
+          attributes: {
+            userRole: "manager"
+          }
         }
+      ]);
 
-        await Layer.deleteMany({}).exec();
-    });
+    nock(config.get("teamsAPI.url"))
+      .get(`/teams/${teamId}`)
+      .reply(200, {
+        data: { id: teamId }
+      });
 
-    it('Create layer as an anonymous user should return an "Not logged" error with matching 401 HTTP code', async function () {
-        const response = await requester.post(`/v3/contextual-layer/team/1`).send();
+    nock(config.get("teamsAPI.url"))
+      .patch(`/teams/${teamId}`)
+      .reply(200, {
+        data: {
+          id: teamId,
+          attributes: {}
+        }
+      });
 
-        expect(response.status).toBe(401);
-        expect(response.body).toHaveProperty("errors");
-        expect(response.body.errors.length).toBe(1);
-        expect(response.body.errors[0]).toHaveProperty("status", 401);
-        expect(response.body.errors[0]).toHaveProperty("detail", "Unauthorized");
-    });
+    const response = await requester
+      .post(`/v3/contextual-layer/team/${teamId}`)
+      .set("Authorization", `Bearer abcd`)
+      .send(layer);
 
-    it("Creates a team layer if the user is a manager of the team", async function () {
-        mockGetUserFromToken(USERS.USER);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("data");
+    expect(response.body.data).toHaveProperty("attributes");
+    expect(response.body.data.attributes).toHaveProperty("owner", { id: teamId.toString(), type: "TEAM" });
 
-        const teamId = new ObjectId();
-        const userId = USERS.USER.id;
+    const layers = await Layer.find({});
+    expect(layers.length).toBe(1);
+    expect(layers[0]).toHaveProperty("_id", new ObjectId(response.body.data.id));
+  });
 
-        const layer = {
-            name: "layer",
-            url: "url",
-            owner: {
-                id: userId,
-                type: "owner type"
-            },
-            enabled: true
-        };
+  it("Returns forbidden if the user is not a manager of the team", async function () {
+    mockGetUserFromToken(USERS.USER);
 
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/user/${USERS.USER.id}`)
-            .reply(200, [
-                {
-                    id: teamId,
-                    attributes: {
-                        userRole: "manager"
-                    }
-                }
-            ]);
+    const teamId = new ObjectId();
+    const userId = USERS.USER.id;
 
-        nock(config.get("teamsAPI.url"))
-            .get(`/teams/${teamId}`)
-            .reply(200, {
-                data: { id: teamId }
-            });
+    const layer = {
+      name: "layer",
+      url: "url",
+      owner: {
+        id: userId,
+        type: "TEAM"
+      },
+      enabled: true
+    };
 
-        nock(config.get("teamsAPI.url"))
-            .patch(`/teams/${teamId}`)
-            .reply(200, {
-                data: {
-                    id: teamId,
-                    attributes: {}
-                }
-            });
+    nock(config.get("v3teamsAPI.url"))
+      .get(`/teams/user/${USERS.USER.id}`)
+      .reply(200, [
+        {
+          id: teamId,
+          attributes: {
+            userRole: "monitor"
+          }
+        }
+      ]);
 
-        const response = await requester
-            .post(`/v3/contextual-layer/team/${teamId}`)
-            .set("Authorization", `Bearer abcd`)
-            .send(layer);
+    nock(config.get("teamsAPI.url"))
+      .get(`/teams/${teamId}`)
+      .reply(200, {
+        data: { id: teamId }
+      });
 
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty("data");
-        expect(response.body.data).toHaveProperty("attributes");
-        expect(response.body.data.attributes).toHaveProperty("owner", { id: teamId.toString(), type: "TEAM" });
+    const response = await requester
+      .post(`/v3/contextual-layer/team/${teamId}`)
+      .set("Authorization", `Bearer abcd`)
+      .send(layer);
 
-        const layers = await Layer.find({});
-        expect(layers.length).toBe(1);
-        expect(layers[0]).toHaveProperty("_id", new ObjectId(response.body.data.id));
-    });
+    expect(response.status).toBe(403);
+    expect(response.body).toHaveProperty("errors");
+    expect(response.body.errors[0]).toHaveProperty("status", 403);
+    expect(response.body.errors[0]).toHaveProperty("detail", "Only team managers can create team layers.");
 
-    it("Returns forbidden if the user is not a manager of the team", async function () {
-        mockGetUserFromToken(USERS.USER);
+    const layers = await Layer.find({});
+    expect(layers.length).toBe(0);
+  });
 
-        const teamId = new ObjectId();
-        const userId = USERS.USER.id;
-
-        const layer = {
-            name: "layer",
-            url: "url",
-            owner: {
-                id: userId,
-                type: "TEAM"
-            },
-            enabled: true
-        };
-
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/user/${USERS.USER.id}`)
-            .reply(200, [
-                {
-                    id: teamId,
-                    attributes: {
-                        userRole: "monitor"
-                    }
-                }
-            ]);
-
-        nock(config.get("teamsAPI.url"))
-            .get(`/teams/${teamId}`)
-            .reply(200, {
-                data: { id: teamId }
-            });
-
-        const response = await requester
-            .post(`/v3/contextual-layer/team/${teamId}`)
-            .set("Authorization", `Bearer abcd`)
-            .send(layer);
-
-        expect(response.status).toBe(403);
-        expect(response.body).toHaveProperty("errors");
-        expect(response.body.errors[0]).toHaveProperty("status", 403);
-        expect(response.body.errors[0]).toHaveProperty("detail", "Only team managers can create team layers.");
-
-        const layers = await Layer.find({});
-        expect(layers.length).toBe(0);
-    });
-
-    afterEach(async function () {
-        await Layer.deleteMany({}).exec();
-        nock.cleanAll();
-    });
+  afterEach(async function () {
+    await Layer.deleteMany({}).exec();
+    nock.cleanAll();
+  });
 });
 
 describe("Delete a layer", function () {
-<<<<<<< HEAD
-    beforeEach(async function () {
-        if (process.env.NODE_ENV !== "test") {
-            throw Error(
-                `Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`
-            );
-=======
   beforeEach(async function () {
     if (process.env.NODE_ENV !== "test") {
       throw Error(
@@ -184,140 +177,9 @@ describe("Delete a layer", function () {
             userId: USERS.USER.id,
             role: "manager"
           }
->>>>>>> 213d24a73c9670f129e01bf1772e4ada9f0a3162
         }
-        await Layer.deleteMany({}).exec();
-    });
+      ]);
 
-    it('Create layer as an anonymous user should return an "Not logged" error with matching 401 HTTP code', async function () {
-        const response = await requester.delete(`/v3/contextual-layer/1`).send();
-
-        expect(response.status).toBe(401);
-        expect(response.body).toHaveProperty("errors");
-        expect(response.body.errors.length).toBe(1);
-        expect(response.body.errors[0]).toHaveProperty("status", 401);
-        expect(response.body.errors[0]).toHaveProperty("detail", "Unauthorized");
-    });
-
-    it("Deletes a team layer if the user is a manager of the team", async function () {
-        mockGetUserFromToken(USERS.USER);
-
-        const teamId = new ObjectId();
-        const layer = await createTeamLayer(teamId);
-
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/${teamId}/users`)
-            .reply(200, [
-                {
-                    id: new ObjectId(),
-                    attributes: {
-                        teamId,
-                        userId: USERS.USER.id,
-                        role: "manager"
-                    }
-                }
-            ]);
-
-        const response = await requester
-            .delete(`/v3/contextual-layer/${layer._id}`)
-            .set("Authorization", `Bearer abcd`)
-            .send();
-
-<<<<<<< HEAD
-        expect(response.status).toBe(204);
-
-    });
-
-    it("Deletes a team layer if the user is a administrator of the team", async function () {
-        mockGetUserFromToken(USERS.USER);
-
-        const teamId = new ObjectId();
-        const layer = await createTeamLayer(teamId);
-
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/${teamId}/users`)
-            .reply(200, [
-                {
-                    id: new ObjectId(),
-                    attributes: {
-                        teamId,
-                        userId: USERS.USER.id,
-                        role: "administrator"
-                    }
-                }
-            ]);
-
-        const response = await requester
-            .delete(`/v3/contextual-layer/${layer._id}`)
-            .set("Authorization", `Bearer abcd`)
-            .send();
-
-        expect(response.status).toBe(204);
-
-
-    });
-
-    it("Fails to delete a team layer if the user is not a manager/administrator", async function () {
-        mockGetUserFromToken(USERS.USER);
-
-        const teamId = new ObjectId();
-        const layer = await createTeamLayer(teamId);
-
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/${teamId}/users`)
-            .reply(200, [
-                {
-                    id: new ObjectId(),
-                    attributes: {
-                        teamId,
-                        userId: USERS.USER.id,
-                        role: "monitor"
-                    }
-                }
-            ]);
-
-        const response = await requester
-            .delete(`/v3/contextual-layer/${layer._id}`)
-            .set("Authorization", `Bearer abcd`)
-            .send();
-
-        expect(response.status).toBe(403);
-        expect(response.body).toHaveProperty("errors");
-        expect(response.body.errors.length).toBe(1);
-        expect(response.body.errors[0]).toHaveProperty("status", 403);
-        expect(response.body.errors[0]).toHaveProperty("detail", "Forbidden");
-
-
-    });
-
-    it("Deletes a team layer if the user is an ADMIN", async function () {
-        mockGetUserFromToken(USERS.ADMIN);
-
-        const teamId = new ObjectId();
-        const layer = await createTeamLayer(teamId);
-
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/${teamId}/users`)
-            .reply(200, [
-                {
-                    id: new ObjectId(),
-                    attributes: {
-                        teamId,
-                        userId: USERS.ADMIN.id,
-                        role: "monitor"
-                    }
-                }
-            ]);
-
-        const response = await requester
-            .delete(`/v3/contextual-layer/${layer._id}`)
-            .set("Authorization", `Bearer abcd`)
-            .send();
-
-        expect(response.status).toBe(204);
-
-    });
-=======
     const response = await requester
       .delete(`/v3/contextual-layer/${layer._id}`)
       .set("Authorization", `Bearer abcd`)
@@ -410,219 +272,224 @@ describe("Delete a layer", function () {
 
     expect(response.status).toBe(204);
   });
->>>>>>> 213d24a73c9670f129e01bf1772e4ada9f0a3162
 
-    afterEach(async function () {
-        await Layer.deleteMany({}).exec();
-        nock.cleanAll();
-    });
+  afterEach(async function () {
+    await Layer.deleteMany({}).exec();
+    nock.cleanAll();
+  });
 });
 
 describe("Update a layer", function () {
-    beforeEach(async function () {
-        if (process.env.NODE_ENV !== "test") {
-            throw Error(
-                `Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`
-            );
+  beforeEach(async function () {
+    if (process.env.NODE_ENV !== "test") {
+      throw Error(
+        `Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`
+      );
+    }
+    await Layer.deleteMany({}).exec();
+  });
+
+  it('Update layer as an anonymous user should return an "Not logged" error with matching 401 HTTP code', async function () {
+    const response = await requester.patch(`/v3/contextual-layer/1`).send();
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty("errors");
+    expect(response.body.errors.length).toBe(1);
+    expect(response.body.errors[0]).toHaveProperty("status", 401);
+    expect(response.body.errors[0]).toHaveProperty("detail", "Unauthorized");
+  });
+
+  it("Update user layer as layer creator", async function () {
+    mockGetUserFromToken(USERS.USER);
+
+    const layer = await createUserLayer(USERS.USER.id);
+
+    const response = await requester
+      .patch(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send({
+        isPublic: true,
+        enabled: false
+      });
+
+    expect(response.status).toBe(204);
+    const newLayer = await Layer.findById(layer._id);
+    expect(newLayer.enabled).toBe(false);
+    expect(newLayer.isPublic).toBe(false);
+  });
+
+  it("Update user layer as ADMIN", async function () {
+    mockGetUserFromToken(USERS.ADMIN);
+
+    const layer = await createUserLayer(USERS.ADMIN.id);
+
+    const response = await requester
+      .patch(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send({
+        isPublic: true,
+        enabled: false
+      });
+
+    expect(response.status).toBe(204);
+    const newLayer = await Layer.findById(layer._id);
+    expect(newLayer.enabled).toBe(false);
+    expect(newLayer.isPublic).toBe(true);
+  });
+
+  it("Fail to update user layer as a different user", async function () {
+    mockGetUserFromToken(USERS.USER);
+
+    const layer = await createUserLayer(new ObjectId());
+
+    const response = await requester
+      .patch(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send({
+        isPublic: true,
+        enabled: false
+      });
+
+    expect(response.status).toBe(204);
+    const newLayer = await Layer.findById(layer._id);
+    expect(newLayer.enabled).toBe(false);
+    expect(newLayer.isPublic).toBe(false);
+  });
+
+  it("Update team layer as a manager", async function () {
+    mockGetUserFromToken(USERS.USER);
+
+    const teamId = new ObjectId();
+    const layer = await createTeamLayer(teamId);
+
+    nock(config.get("v3teamsAPI.url"))
+      .get(`/teams/${teamId}/users`)
+      .reply(200, [
+        {
+          id: new ObjectId(),
+          attributes: {
+            teamId,
+            userId: USERS.USER.id,
+            role: "manager"
+          }
         }
-        await Layer.deleteMany({}).exec();
-    });
+      ]);
 
-    it('Update layer as an anonymous user should return an "Not logged" error with matching 401 HTTP code', async function () {
-        const response = await requester.patch(`/v3/contextual-layer/1`).send();
+    const response = await requester
+      .patch(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send({
+        isPublic: true,
+        enabled: false
+      });
 
-        expect(response.status).toBe(401);
-        expect(response.body).toHaveProperty("errors");
-        expect(response.body.errors.length).toBe(1);
-        expect(response.body.errors[0]).toHaveProperty("status", 401);
-        expect(response.body.errors[0]).toHaveProperty("detail", "Unauthorized");
-    });
+    expect(response.status).toBe(204);
+    const newLayer = await Layer.findById(layer._id);
+    expect(newLayer.enabled).toBe(false);
+    expect(newLayer.isPublic).toBe(false);
+  });
 
-    it("Update user layer as layer creator", async function () {
-        mockGetUserFromToken(USERS.USER);
+  it("Update team layer as an administrator", async function () {
+    mockGetUserFromToken(USERS.USER);
 
-        const layer = await createUserLayer(USERS.USER.id);
+    const teamId = new ObjectId();
+    const layer = await createTeamLayer(teamId);
 
-        const response = await requester.patch(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send({
-            isPublic: true,
-            enabled: false
-        });
+    nock(config.get("v3teamsAPI.url"))
+      .get(`/teams/${teamId}/users`)
+      .reply(200, [
+        {
+          id: new ObjectId(),
+          attributes: {
+            teamId,
+            userId: USERS.USER.id,
+            role: "administrator"
+          }
+        }
+      ]);
 
-        expect(response.status).toBe(204)
-        const newLayer = await Layer.findById(layer._id)
-        expect(newLayer.enabled).toBe(false)
-        expect(newLayer.isPublic).toBe(false)
-    });
+    const response = await requester
+      .patch(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send({
+        isPublic: true,
+        enabled: false
+      });
 
-    it("Update user layer as ADMIN", async function () {
-        mockGetUserFromToken(USERS.ADMIN);
+    expect(response.status).toBe(204);
+    const newLayer = await Layer.findById(layer._id);
+    expect(newLayer.enabled).toBe(false);
+    expect(newLayer.isPublic).toBe(false);
+  });
 
-        const layer = await createUserLayer(USERS.ADMIN.id);
+  it("Fail to update a team layer as a monitor", async function () {
+    mockGetUserFromToken(USERS.USER);
 
-        const response = await requester.patch(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send({
-            isPublic: true,
-            enabled: false
-        });
+    const teamId = new ObjectId();
+    const layer = await createTeamLayer(teamId);
 
-        expect(response.status).toBe(204)
-        const newLayer = await Layer.findById(layer._id)
-        expect(newLayer.enabled).toBe(false)
-        expect(newLayer.isPublic).toBe(true)
-    });
+    nock(config.get("v3teamsAPI.url"))
+      .get(`/teams/${teamId}/users`)
+      .reply(200, [
+        {
+          id: new ObjectId(),
+          attributes: {
+            teamId,
+            userId: USERS.USER.id,
+            role: "monitor"
+          }
+        }
+      ]);
 
-    it("Fail to update user layer as a different user", async function () {
-        mockGetUserFromToken(USERS.USER);
+    const response = await requester
+      .patch(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send({
+        isPublic: true,
+        enabled: false
+      });
 
-        const layer = await createUserLayer(new ObjectId());
+    expect(response.status).toBe(204);
+    const newLayer = await Layer.findById(layer._id);
+    expect(newLayer.enabled).toBe(true);
+    expect(newLayer.isPublic).toBe(false);
+  });
 
-        const response = await requester.patch(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send({
-            isPublic: true,
-            enabled: false
-        });
+  it("Fail to update a team layer as ADMIN", async function () {
+    mockGetUserFromToken(USERS.ADMIN);
 
-        expect(response.status).toBe(204)
-        const newLayer = await Layer.findById(layer._id)
-        expect(newLayer.enabled).toBe(false)
-        expect(newLayer.isPublic).toBe(false)
-    });
+    const teamId = new ObjectId();
+    const layer = await createTeamLayer(teamId);
 
-    it("Update team layer as a manager", async function () {
-        mockGetUserFromToken(USERS.USER);
+    nock(config.get("v3teamsAPI.url"))
+      .get(`/teams/${teamId}/users`)
+      .reply(200, [
+        {
+          id: new ObjectId(),
+          attributes: {
+            teamId,
+            userId: USERS.ADMIN.id,
+            role: "monitor"
+          }
+        }
+      ]);
 
-        const teamId = new ObjectId()
-        const layer = await createTeamLayer(teamId);
+    const response = await requester
+      .patch(`/v3/contextual-layer/${layer._id}`)
+      .set("Authorization", `Bearer abcd`)
+      .send({
+        isPublic: true,
+        enabled: false
+      });
 
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/${teamId}/users`)
-            .reply(200, [
-                {
-                    id: new ObjectId(),
-                    attributes: {
-                        teamId,
-                        userId: USERS.USER.id,
-                        role: "manager"
-                    }
-                }
-            ]);
+    expect(response.status).toBe(204);
+    const newLayer = await Layer.findById(layer._id);
+    expect(newLayer.enabled).toBe(true);
+    expect(newLayer.isPublic).toBe(false);
+  });
 
-        const response = await requester.patch(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send({
-            isPublic: true,
-            enabled: false
-        });
-
-        expect(response.status).toBe(204)
-        const newLayer = await Layer.findById(layer._id)
-        expect(newLayer.enabled).toBe(false)
-        expect(newLayer.isPublic).toBe(false)
-    });
-
-    it("Update team layer as an administrator", async function () {
-        mockGetUserFromToken(USERS.USER);
-
-        const teamId = new ObjectId()
-        const layer = await createTeamLayer(teamId);
-
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/${teamId}/users`)
-            .reply(200, [
-                {
-                    id: new ObjectId(),
-                    attributes: {
-                        teamId,
-                        userId: USERS.USER.id,
-                        role: "administrator"
-                    }
-                }
-            ]);
-
-        const response = await requester.patch(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send({
-            isPublic: true,
-            enabled: false
-        });
-
-        expect(response.status).toBe(204)
-        const newLayer = await Layer.findById(layer._id)
-        expect(newLayer.enabled).toBe(false)
-        expect(newLayer.isPublic).toBe(false)
-    });
-
-    it("Fail to update a team layer as a monitor", async function () {
-        mockGetUserFromToken(USERS.USER);
-
-        const teamId = new ObjectId()
-        const layer = await createTeamLayer(teamId);
-
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/${teamId}/users`)
-            .reply(200, [
-                {
-                    id: new ObjectId(),
-                    attributes: {
-                        teamId,
-                        userId: USERS.USER.id,
-                        role: "monitor"
-                    }
-                }
-            ]);
-
-        const response = await requester.patch(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send({
-            isPublic: true,
-            enabled: false
-        });
-
-        expect(response.status).toBe(204)
-        const newLayer = await Layer.findById(layer._id)
-        expect(newLayer.enabled).toBe(true)
-        expect(newLayer.isPublic).toBe(false)
-    });
-
-    it("Fail to update a team layer as ADMIN", async function () {
-        mockGetUserFromToken(USERS.ADMIN);
-
-        const teamId = new ObjectId()
-        const layer = await createTeamLayer(teamId);
-
-        nock(config.get("v3teamsAPI.url"))
-            .get(`/teams/${teamId}/users`)
-            .reply(200, [
-                {
-                    id: new ObjectId(),
-                    attributes: {
-                        teamId,
-                        userId: USERS.ADMIN.id,
-                        role: "monitor"
-                    }
-                }
-            ]);
-
-        const response = await requester.patch(`/v3/contextual-layer/${layer._id}`)
-        .set("Authorization", `Bearer abcd`)
-        .send({
-            isPublic: true,
-            enabled: false
-        });
-
-        expect(response.status).toBe(204)
-        const newLayer = await Layer.findById(layer._id)
-        expect(newLayer.enabled).toBe(true)
-        expect(newLayer.isPublic).toBe(false)
-    });
-
-
-    afterEach(async function () {
-        await Layer.deleteMany({}).exec();
-        nock.cleanAll();
-    });
+  afterEach(async function () {
+    await Layer.deleteMany({}).exec();
+    nock.cleanAll();
+  });
 });

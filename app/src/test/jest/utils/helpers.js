@@ -1,6 +1,5 @@
 const nock = require("nock");
 const config = require("config");
-const { ObjectId } = require("mongoose").Types;
 const Layer = require("models/layer.model");
 
 const mockGetUserFromToken = userProfile => {
@@ -24,7 +23,7 @@ const createTeamLayer = async teamId => {
   return await layer.save();
 };
 
-const createUserLayer = async (userId) => {
+const createUserLayer = async userId => {
   const layer = new Layer({
     name: "layer",
     url: "url",
@@ -37,8 +36,7 @@ const createUserLayer = async (userId) => {
   });
 
   return await layer.save();
-
-}
+};
 
 module.exports = {
   mockGetUserFromToken,

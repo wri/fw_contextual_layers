@@ -18,11 +18,12 @@ class V3LayerService {
 
   static getEnabled(layer, data, teamUsers) {
     let manager = null;
-    if(teamUsers) manager = teamUsers.find(
-      teamUser => teamUser.attributes.userId.toString() === data.user.id.toString() &&
-        (teamUser.attributes.role === "manager" || teamUser.attributes.role === "administrator")
+    if (teamUsers)
+      manager = teamUsers.find(
+        teamUser =>
+          teamUser.attributes.userId.toString() === data.user.id.toString() &&
+          (teamUser.attributes.role === "manager" || teamUser.attributes.role === "administrator")
       );
-      console.log(teamUsers, manager)
     return !teamUsers || manager ? data.enabled : layer.enabled;
   }
 
