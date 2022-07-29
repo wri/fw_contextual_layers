@@ -76,8 +76,6 @@ describe("Create a team layer", function () {
         }
       });
 
-    console.log(nock.activeMocks());
-
     const response = await requester
       .post(`/v3/contextual-layer/team/${teamId}`)
       .set("Authorization", `Bearer abcd`)
