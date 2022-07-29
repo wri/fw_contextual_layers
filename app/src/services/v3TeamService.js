@@ -16,14 +16,14 @@ class V3TeamService {
           authorization: loggedInUserService.token
         }
       });
-      teams = response.data.data;
+      teams = response.data;
     } catch (e) {
       logger.info("Failed to fetch teams");
     }
     if (teams.length === 0) {
       logger.info("User does not belong to a team.");
     }
-    return teams;
+    return teams && teams.data;
   }
 
   static async getTeamUsers(teamId) {
@@ -38,14 +38,14 @@ class V3TeamService {
           authorization: loggedInUserService.token
         }
       });
-      teams = response.data.data;
+      teams = response.data;
     } catch (e) {
       logger.info("Failed to fetch users");
     }
     if (teams.length === 0) {
       logger.info("No users are on this team.");
     }
-    return teams;
+    return teams && teams.data;
   }
 }
 

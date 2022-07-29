@@ -18,6 +18,7 @@ class V3LayerService {
 
   static getEnabled(layer, data, teamUsers) {
     let manager = null;
+    console.log("**********", layer, data, teamUsers);
     if (teamUsers)
       manager = teamUsers.find(
         teamUser =>

@@ -77,7 +77,9 @@ class Layer {
     let teamUsers = null;
     if (layer.owner.type === V3LayerService.type.TEAM) {
       try {
+        console.log("Getting team users for id", layer.owner.id);
         teamUsers = await V3TeamService.getTeamUsers(layer.owner.id);
+        console.log("Team users are", teamUsers);
       } catch (e) {
         logger.error(e);
         ctx.throw(500, "Team users retrieval failed.");
@@ -133,10 +135,9 @@ class Layer {
   }
 
   static async deleteAllUserLayers(ctx) {
-
     logger.info(`Deleting all layers for user with id ${ctx.request.body.user}`);
 
-    await LayerModel.deleteMany({"owner.id": ctx.request.body.user})
+    await LayerModel.deleteMany({ "owner.id": ctx.request.body.user.id });
 
     ctx.body = "";
     ctx.status = 204;
