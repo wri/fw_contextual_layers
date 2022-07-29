@@ -133,10 +133,9 @@ class Layer {
   }
 
   static async deleteAllUserLayers(ctx) {
-
     logger.info(`Deleting all layers for user with id ${ctx.request.body.user}`);
 
-    await LayerModel.deleteMany({"owner.id": ctx.request.body.user})
+    await LayerModel.deleteMany({ "owner.id": ctx.request.body.user });
 
     ctx.body = "";
     ctx.status = 204;

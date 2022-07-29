@@ -50,11 +50,13 @@ describe("Create a team layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/user/${USERS.USER.id}`)
       .reply(200, [
-        { data: {
-          id: teamId,
-          attributes: {
-            userRole: "manager"
-          }}
+        {
+          data: {
+            id: teamId,
+            attributes: {
+              userRole: "manager"
+            }
+          }
         }
       ]);
 
@@ -73,7 +75,7 @@ describe("Create a team layer", function () {
         }
       });
 
-      console.log(nock.activeMocks());
+    console.log(nock.activeMocks());
 
     const response = await requester
       .post(`/v3/contextual-layer/team/${teamId}`)
@@ -109,11 +111,13 @@ describe("Create a team layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/user/${USERS.USER.id}`)
       .reply(200, [
-        { data: {
-          id: teamId,
-          attributes: {
-            userRole: "monitor"
-          } }
+        {
+          data: {
+            id: teamId,
+            attributes: {
+              userRole: "monitor"
+            }
+          }
         }
       ]);
 
@@ -172,13 +176,15 @@ describe("Delete a layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
-        { data: {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "manager"
-          }}
+        {
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "manager"
+            }
+          }
         }
       ]);
 
@@ -199,14 +205,16 @@ describe("Delete a layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
-        { data: {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "administrator"
+        {
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "administrator"
+            }
           }
-        }}
+        }
       ]);
 
     const response = await requester
@@ -226,13 +234,15 @@ describe("Delete a layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
-        { data: {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "monitor"
-          } }
+        {
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "monitor"
+            }
+          }
         }
       ]);
 
@@ -257,13 +267,15 @@ describe("Delete a layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
-        { data: {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.ADMIN.id,
-            role: "monitor"
-          }}
+        {
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.ADMIN.id,
+              role: "monitor"
+            }
+          }
         }
       ]);
 
@@ -367,13 +379,15 @@ describe("Update a layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
-        { data: {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "manager"
-          }}
+        {
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "manager"
+            }
+          }
         }
       ]);
 
@@ -400,13 +414,15 @@ describe("Update a layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
-        { data: {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "administrator"
-          }}
+        {
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "administrator"
+            }
+          }
         }
       ]);
 
@@ -433,13 +449,15 @@ describe("Update a layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
-        { data: {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "monitor"
-          }}
+        {
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "monitor"
+            }
+          }
         }
       ]);
 
@@ -466,13 +484,15 @@ describe("Update a layer", function () {
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
       .reply(200, [
-        { data: {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.ADMIN.id,
-            role: "monitor"
-          }}
+        {
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.ADMIN.id,
+              role: "monitor"
+            }
+          }
         }
       ]);
 
