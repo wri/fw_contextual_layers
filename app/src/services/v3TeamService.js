@@ -16,7 +16,7 @@ class V3TeamService {
           authorization: loggedInUserService.token
         }
       });
-      teams = response.data;
+      teams = response.data.data;
     } catch (e) {
       logger.info("Failed to fetch teams");
     }
@@ -38,7 +38,7 @@ class V3TeamService {
           authorization: loggedInUserService.token
         }
       });
-      teams = response.data;
+      teams = response.data.data;
     } catch (e) {
       logger.info("Failed to fetch users");
     }

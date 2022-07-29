@@ -131,6 +131,16 @@ class Layer {
     ctx.body = "";
     ctx.status = 204;
   }
+
+  static async deleteAllUserLayers(ctx) {
+
+    logger.info(`Deleting all layers for user with id ${ctx.request.body.user}`);
+
+    await LayerModel.deleteMany({"owner.id": ctx.request.body.user})
+
+    ctx.body = "";
+    ctx.status = 204;
+  }
 }
 
 const isAuthenticatedMiddleware = async (ctx, next) => {
@@ -157,6 +167,7 @@ router.post(
   LayerValidator.create,
   Layer.createTeamLayer
 );
+router.delete("/deleteAllUserLayers", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteAllUserLayers);
 router.delete("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteLayer);
 
 module.exports = router;
