@@ -3,17 +3,18 @@ info:
   title: fw_contextual_layers
   version: '1.0'
 servers:
-  - url: 'https://api.resourcewatch.org/v1'
+  - url: 'https://api.resourcewatch.org'
     description: Production
-  - url: 'https://gfw-staging.globalforestwatch.org/v1'
+  - url: 'https://gfw-staging.globalforestwatch.org'
     description: Staging
-  - url: 'http://localhost:3025/v1'
+  - url: 'http://localhost:3025'
     description: Local
 paths:
-  /contextual-layer:
+  /v1/contextual-layer:
     get:
       summary: Get all contextual layers
-      tags: []
+      tags:
+        - v1
       responses:
         '200':
           $ref: '#/components/responses/Layers'
@@ -43,7 +44,10 @@ paths:
           $ref: '#/components/responses/Error'
       requestBody:
         $ref: '#/components/requestBodies/Layer'
-  '/contextual-layer/team/{teamId}':
+      tags:
+        - v1
+    parameters: []
+  '/v1/contextual-layer/team/{teamId}':
     post:
       summary: Create contextual layer for a team
       operationId: post-team-contextual-layer
@@ -56,13 +60,28 @@ paths:
           $ref: '#/components/responses/Error'
       requestBody:
         $ref: '#/components/requestBodies/Layer'
+      tags:
+        - v1
     parameters:
       - schema:
           type: string
         name: teamId
         in: path
         required: true
-  '/contextual-layer/{layerId}':
+  /v3/contextual-layer/deleteAllUserLayers:
+    parameters: []
+    delete:
+      summary: Delete All Layers For User
+      operationId: delete-v3-contextual-layer-deleteAllUserLayers
+      responses:
+        '204':
+          description: No Content
+        '404':
+          $ref: '#/components/responses/Error'
+      tags:
+        - v3
+      description: Endpoint that deletes every user owned layer
+  '/v1/contextual-layer/{layerId}':
     parameters:
       - schema:
           type: string
@@ -87,6 +106,8 @@ paths:
         - you can only update the isPublic attribute of contextual layers if you are an ADMIN user and thecontextual layer you are trying to update is owned by a user (not by a team) - in all other cases, the isPublic attribute value is kept as is.
       requestBody:
         $ref: '#/components/requestBodies/Layer'
+      tags:
+        - v1
     delete:
       summary: Delete contextual layer
       operationId: delete-contextual-layer
@@ -102,10 +123,13 @@ paths:
         - the contextual layer's `isPublic` property must be set to `false`.
         - if the contextual layer is owned by a user, you must be the owner of the contextual layer.
         - if the contextual layer is owned by a team, you must be one of the managers of the team that owns the contextual layer.
-  '/contextual-layer/loss-layer/{startYear}/{endYear}/{z}/{x}/{y}.png':
+      tags:
+        - v1
+  '/v1/contextual-layer/loss-layer/{startYear}/{endYear}/{z}/{x}/{y}.png':
     get:
       summary: Get loss layer tiles
-      tags: []
+      tags:
+        - v1
       responses:
         '200':
           description: OK
@@ -146,15 +170,24 @@ paths:
         name: 'y'
         in: path
         required: true
-  /fw_contextual_layers/healthcheck:
+  /v1/fw_contextual_layers/healthcheck:
     get:
       summary: Healthcheck
-      tags: []
+      tags:
+        - v1
       responses:
         '200':
           $ref: '#/components/responses/Healthcheck'
       operationId: get-fw_api-healthcheck
       security: []
+    parameters: []
+  '/v1/contextual-layer/team/{teamId} - copy':
+    delete:
+      summary: ''
+      operationId: delete-v1-contextual-layer-team-teamId---copy
+      responses:
+        '200':
+          description: OK
 components:
   schemas:
     Layer:
