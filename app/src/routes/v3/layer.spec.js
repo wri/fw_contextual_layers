@@ -7,6 +7,7 @@ const nock = require("nock");
 const config = require("config");
 const { mockGetUserFromToken } = require("../../test/mocha/utils/helpers");
 const { createTeamLayer, createUserLayer } = require("../../test/jest/utils/helpers");
+//const { expect } = require("chai");
 
 const requester = getTestServer();
 
@@ -49,14 +50,16 @@ describe("Create a team layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/user/${USERS.USER.id}`)
-      .reply(200, [
-        {
-          id: teamId,
-          attributes: {
-            userRole: "manager"
+      .reply(200, {
+        data: [
+          {
+            id: teamId,
+            attributes: {
+              userRole: "manager"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     nock(config.get("teamsAPI.url"))
       .get(`/teams/${teamId}`)
@@ -106,14 +109,16 @@ describe("Create a team layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/user/${USERS.USER.id}`)
-      .reply(200, [
-        {
-          id: teamId,
-          attributes: {
-            userRole: "monitor"
+      .reply(200, {
+        data: [
+          {
+            id: teamId,
+            attributes: {
+              userRole: "monitor"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     nock(config.get("teamsAPI.url"))
       .get(`/teams/${teamId}`)
@@ -169,16 +174,18 @@ describe("Delete a layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
-      .reply(200, [
-        {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "manager"
+      .reply(200, {
+        data: [
+          {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "manager"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     const response = await requester
       .delete(`/v3/contextual-layer/${layer._id}`)
@@ -196,16 +203,18 @@ describe("Delete a layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
-      .reply(200, [
-        {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "administrator"
+      .reply(200, {
+        data: [
+          {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "administrator"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     const response = await requester
       .delete(`/v3/contextual-layer/${layer._id}`)
@@ -223,16 +232,18 @@ describe("Delete a layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
-      .reply(200, [
-        {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "monitor"
+      .reply(200, {
+        data: [
+          {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "monitor"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     const response = await requester
       .delete(`/v3/contextual-layer/${layer._id}`)
@@ -254,16 +265,18 @@ describe("Delete a layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
-      .reply(200, [
-        {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.ADMIN.id,
-            role: "monitor"
+      .reply(200, {
+        data: [
+          {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.ADMIN.id,
+              role: "monitor"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     const response = await requester
       .delete(`/v3/contextual-layer/${layer._id}`)
@@ -366,11 +379,13 @@ describe("Update a layer", function () {
       .get(`/teams/${teamId}/users`)
       .reply(200, [
         {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "manager"
+          data: {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "manager"
+            }
           }
         }
       ]);
@@ -397,16 +412,18 @@ describe("Update a layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
-      .reply(200, [
-        {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "administrator"
+      .reply(200, {
+        data: [
+          {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "administrator"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     const response = await requester
       .patch(`/v3/contextual-layer/${layer._id}`)
@@ -430,16 +447,18 @@ describe("Update a layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
-      .reply(200, [
-        {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.USER.id,
-            role: "monitor"
+      .reply(200, {
+        data: [
+          {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.USER.id,
+              role: "monitor"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     const response = await requester
       .patch(`/v3/contextual-layer/${layer._id}`)
@@ -463,16 +482,18 @@ describe("Update a layer", function () {
 
     nock(config.get("v3teamsAPI.url"))
       .get(`/teams/${teamId}/users`)
-      .reply(200, [
-        {
-          id: new ObjectId(),
-          attributes: {
-            teamId,
-            userId: USERS.ADMIN.id,
-            role: "monitor"
+      .reply(200, {
+        data: [
+          {
+            id: new ObjectId(),
+            attributes: {
+              teamId,
+              userId: USERS.ADMIN.id,
+              role: "monitor"
+            }
           }
-        }
-      ]);
+        ]
+      });
 
     const response = await requester
       .patch(`/v3/contextual-layer/${layer._id}`)
@@ -486,6 +507,57 @@ describe("Update a layer", function () {
     const newLayer = await Layer.findById(layer._id);
     expect(newLayer.enabled).toBe(true);
     expect(newLayer.isPublic).toBe(false);
+  });
+
+  afterEach(async function () {
+    await Layer.deleteMany({}).exec();
+    nock.cleanAll();
+  });
+});
+
+describe("Delete all user layers", function () {
+  beforeEach(async function () {
+    if (process.env.NODE_ENV !== "test") {
+      throw Error(
+        `Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`
+      );
+    }
+    await Layer.deleteMany({}).exec();
+  });
+
+  it('Delete layers as an anonymous user should return an "Not logged" error with matching 401 HTTP code', async function () {
+    const response = await requester.delete(`/v3/contextual-layer/1`).send();
+
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty("errors");
+    expect(response.body.errors.length).toBe(1);
+    expect(response.body.errors[0]).toHaveProperty("status", 401);
+    expect(response.body.errors[0]).toHaveProperty("detail", "Unauthorized");
+  });
+
+  it("Deletes all user layers", async function () {
+    mockGetUserFromToken(USERS.USER);
+
+    const teamId = new ObjectId();
+    const teamLayer = await createTeamLayer(teamId);
+    await createUserLayer(USERS.USER.id);
+    await createUserLayer(USERS.USER.id);
+    const differentUserLayer1 = await createUserLayer(new ObjectId());
+
+    const startingLayers = await Layer.find({});
+    expect(startingLayers.length).toBe(4);
+
+    const response = await requester
+      .delete(`/v3/contextual-layer/deleteAllUserLayers`)
+      .set("Authorization", `Bearer abcd`)
+      .send();
+
+    expect(response.status).toBe(204);
+
+    const layers = await Layer.find({});
+    expect(layers.length).toBe(2);
+    expect(layers[0]._id).toEqual(teamLayer._id);
+    expect(layers[1]._id).toEqual(differentUserLayer1._id);
   });
 
   afterEach(async function () {

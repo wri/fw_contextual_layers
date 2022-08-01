@@ -23,7 +23,7 @@ class V3TeamService {
     if (teams.length === 0) {
       logger.info("User does not belong to a team.");
     }
-    return teams;
+    return teams && teams.data;
   }
 
   static async getTeamUsers(teamId) {
@@ -45,7 +45,7 @@ class V3TeamService {
     if (teams.length === 0) {
       logger.info("No users are on this team.");
     }
-    return teams;
+    return teams && teams.data;
   }
 }
 
