@@ -10,6 +10,9 @@
   "teamsAPI": {
     "url": "TEAMS_API_URL"
   },
+  "v3teamsAPI": {
+    "url": "V3_TEAMS_API_URL"
+  },
   "controlTower": {
     "url": "CT_URL"
   }
