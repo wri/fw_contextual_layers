@@ -22,7 +22,7 @@ class V3LayerService {
       manager = teamUsers.find(
         teamUser =>
           teamUser.attributes.userId &&
-          (teamUser.attributes.userId.toString() === data.user.id.toString()) &&
+          teamUser.attributes.userId.toString() === data.user.id.toString() &&
           (teamUser.attributes.role === "manager" || teamUser.attributes.role === "administrator")
       );
     return !teamUsers || manager ? data.enabled : layer.enabled;
@@ -47,7 +47,7 @@ class V3LayerService {
         let manager = teamUsers.find(
           teamUser =>
             teamUser.attributes.userId &&
-            (teamUser.attributes.userId.toString() === user.id.toString()) &&
+            teamUser.attributes.userId.toString() === user.id.toString() &&
             (teamUser.attributes.role === "manager" || teamUser.attributes.role === "administrator")
         );
         if (!manager) return false;
