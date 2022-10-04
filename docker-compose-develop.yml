@@ -7,24 +7,51 @@ services:
         - "3025:3025"
     environment:
       PORT: 3025
-      NODE_PATH: app/src
       NODE_ENV: dev
       SUPPRESS_NO_CONFIG_WARNING: "true"
-      CT_URL: https://api.resourcewatch.org
+      CT_URL: https://staging-api.resourcewatch.org
       LOCAL_URL: http://127.0.0.1:3025
-      TEAMS_API_URL: http://fw-teams-develop:3035/api/v1
+      TEAMS_API_URL: https://staging-api.resourcewatch.org/v1
+      V3_TEAMS_API_URL: https://staging-api.resourcewatch.org/v3
       MONGO_PORT_27017_TCP_ADDR: mongo
       DB_SECRET: '{ "username": "admin", "password": "password" }'
       DB_DATABASE: fw_contextual_layer
       API_VERSION: v1
     volumes:
       - ./app:/opt/fw-contextual-layer/app
+      - ./nodemon.json:/opt/fw-contextual-layer/nodemon.json
     depends_on:
       - mongo
     networks:
       - gfw-network
       - gfw-contextual-layers-network
-    command: node node_modules/.bin/grunt --gruntfile app/Gruntfile.js
+    command: yarn dev
+
+  test:
+    build: .
+    container_name: fw-contextual-layer-test
+    environment:
+      PORT: 0
+      NODE_ENV: test
+      SUPPRESS_NO_CONFIG_WARNING: "true"
+      CT_URL: http://127.0.0.1:9000
+      LOCAL_URL: http://127.0.0.1:3025
+      TEAMS_API_URL: http://fw-teams-develop:3035/api/v1
+      V3_TEAMS_API_URL: http://fw-teams-develop:3035/api/v3
+      MONGO_PORT_27017_TCP_ADDR: mongo
+      DB_SECRET: '{ "username": "admin", "password": "password" }'
+      DB_DATABASE: fw_contextual_layer
+      API_VERSION: v1
+    depends_on:
+      - mongo
+    volumes:
+      - ./app:/opt/fw-contextual-layer/app
+      - ./nodemon.json:/opt/fw-contextual-layer/nodemon.json
+      - ./jest.config.js:/opt/fw-contextual-layer/jest.config.js
+    command: yarn test:jest --runInBand
+    networks:
+      - gfw-network
+      - gfw-contextual-layers-network
 
   docs:
     build: .

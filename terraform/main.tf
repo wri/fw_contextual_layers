@@ -71,11 +71,11 @@ data "template_file" "container_definition" {
     aws_region                = var.region
     container_port            = var.container_port
     PORT                      = "${var.container_port}"
-    NODE_PATH                 = var.NODE_PATH
     NODE_ENV                  = var.NODE_ENV
     CT_URL                    = var.CT_URL
     LOCAL_URL                 = "http://127.0.0.1:${var.container_port}"
     TEAMS_API_URL             = "https://${data.terraform_remote_state.fw_core.outputs.public_url}/v1"
+    V3_TEAMS_API_URL          = "https://${data.terraform_remote_state.fw_core.outputs.public_url}/v3"
     MONGO_PORT_27017_TCP_ADDR = data.terraform_remote_state.core.outputs.document_db_endpoint
     db_secret_arn             = data.terraform_remote_state.core.outputs.document_db_secrets_arn
     API_VERSION               = var.API_VERSION
