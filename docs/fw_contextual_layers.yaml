@@ -188,6 +188,22 @@ paths:
       responses:
         '200':
           description: OK
+  '/v3/contextual-layer/team/:teamId':
+    post:
+      summary: Create team layer
+      tags: []
+      responses:
+        '200':
+          $ref: '#/components/responses/Layer'
+        '401':
+          description: Unauthorized
+        '403':
+          $ref: '#/components/responses/Layer'
+      operationId: 'post-v3-contextual-layer-team-:teamId'
+      requestBody:
+        $ref: '#/components/requestBodies/Layer'
+      description: Create a layer owned by a team
+      x-internal: false
 components:
   schemas:
     Layer:
