@@ -23,21 +23,20 @@ class Layer {
   static async createTeamLayer(ctx) {
     logger.info("Create team layer");
     const owner = { type: LayerService.type.TEAM, id: ctx.params.teamId };
+
     let team = null;
     try {
-      team = await TeamService.getTeam(owner.id);
+      team = await V3TeamService.getTeam(owner.id);
     } catch (e) {
       logger.error(e);
       ctx.throw(500, "Team retrieval failed.");
     }
+
     // get list of user teams
-    let teams = await V3TeamService.getUserTeams(ctx.request.body.user.id);
-    let matchingTeam = teams.find(obj => obj.id === owner.id);
-    const isManager =
-      matchingTeam &&
-      matchingTeam.attributes &&
-      (matchingTeam.attributes.userRole.toString() === "manager" ||
-        matchingTeam.attributes.userRole.toString() === "administrator");
+    const userTeams = await V3TeamService.getUserTeams(ctx.request.body.user.id);
+    const userTeam = userTeams.find(team => team.id === owner.id);
+    const isManager = userTeam && ["manager", "administrator"].includes(userTeam.userRole);
+
     if (isManager) {
       let layer = null;
       try {
@@ -48,7 +47,7 @@ class Layer {
       }
       const layers = team.layers || [];
       try {
-        await TeamService.patchTeamById(owner.id, {
+        await V3TeamService.patchTeamById(owner.id, {
           layers: [...layers, layer.id]
         });
       } catch (e) {
