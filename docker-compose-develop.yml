@@ -11,8 +11,8 @@ services:
       SUPPRESS_NO_CONFIG_WARNING: "true"
       CT_URL: https://staging-api.resourcewatch.org
       LOCAL_URL: http://127.0.0.1:3025
-      TEAMS_API_URL: https://staging-api.resourcewatch.org/v1
-      V3_TEAMS_API_URL: https://staging-api.resourcewatch.org/v3
+      TEAMS_API_URL: https://dev-fw-api.globalforestwatch.org/v3/gfw
+      V3_TEAMS_API_URL: https://dev-fw-api.globalforestwatch.org/v3/gfw
       MONGO_PORT_27017_TCP_ADDR: mongo
       DB_SECRET: '{ "username": "admin", "password": "password" }'
       DB_DATABASE: fw_contextual_layer
