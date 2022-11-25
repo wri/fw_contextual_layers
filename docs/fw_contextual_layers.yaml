@@ -191,14 +191,15 @@ paths:
   '/v3/contextual-layer/team/:teamId':
     post:
       summary: Create team layer
-      tags: []
+      tags:
+        - v3
       responses:
         '200':
           $ref: '#/components/responses/Layer'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Error'
         '403':
-          $ref: '#/components/responses/Layer'
+          $ref: '#/components/responses/Error'
       operationId: 'post-v3-contextual-layer-team-:teamId'
       requestBody:
         $ref: '#/components/requestBodies/Layer'
