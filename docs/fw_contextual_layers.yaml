@@ -1,13 +1,13 @@
 openapi: 3.1.0
 info:
   title: fw_contextual_layers
-  version: '1.0'
+  version: "1.0"
 servers:
-  - url: 'https://api.resourcewatch.org'
+  - url: "https://api.resourcewatch.org"
     description: Production
-  - url: 'https://gfw-staging.globalforestwatch.org'
+  - url: "https://gfw-staging.globalforestwatch.org"
     description: Staging
-  - url: 'http://localhost:3025'
+  - url: "http://localhost:3025"
     description: Local
 paths:
   /v1/contextual-layer:
@@ -16,18 +16,18 @@ paths:
       tags:
         - v1
       responses:
-        '200':
-          $ref: '#/components/responses/Layers'
-        '401':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/Layers"
+        "401":
+          $ref: "#/components/responses/Error"
       operationId: get-contextual-layer
       parameters:
         - schema:
             type: boolean
-            default: 'false'
+            default: "false"
           in: query
           name: enabled
-          description: 'Filter by the enabled attribute, to retrieve only enabled or disabled layers.'
+          description: "Filter by the enabled attribute, to retrieve only enabled or disabled layers."
       description: |-
         This endpoint allows you to list contextual layers and their properties. If successful, the returned response will include a list of contextual layers in the `data` index of the response body, including contextual layers that match one of the following conditions:
         - the contextual layer is public - isPublic attribute is set to true;
@@ -38,28 +38,28 @@ paths:
       summary: Create contextual layer for a user
       operationId: post-contextual-layer
       responses:
-        '200':
-          $ref: '#/components/responses/Layer'
-        '401':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/Layer"
+        "401":
+          $ref: "#/components/responses/Error"
       requestBody:
-        $ref: '#/components/requestBodies/Layer'
+        $ref: "#/components/requestBodies/Layer"
       tags:
         - v1
     parameters: []
-  '/v1/contextual-layer/team/{teamId}':
+  "/v1/contextual-layer/team/{teamId}":
     post:
       summary: Create contextual layer for a team
       operationId: post-team-contextual-layer
       responses:
-        '200':
-          $ref: '#/components/responses/Layer'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/Layer"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
       requestBody:
-        $ref: '#/components/requestBodies/Layer'
+        $ref: "#/components/requestBodies/Layer"
       tags:
         - v1
     parameters:
@@ -74,14 +74,14 @@ paths:
       summary: Delete All Layers For User
       operationId: delete-v3-contextual-layer-deleteAllUserLayers
       responses:
-        '204':
+        "204":
           description: No Content
-        '404':
-          $ref: '#/components/responses/Error'
+        "404":
+          $ref: "#/components/responses/Error"
       tags:
         - v3
       description: Endpoint that deletes every user owned layer
-  '/v1/contextual-layer/{layerId}':
+  "/v1/contextual-layer/{layerId}":
     parameters:
       - schema:
           type: string
@@ -92,12 +92,12 @@ paths:
       summary: Update contextual layer
       operationId: patch-contextual-layer
       responses:
-        '200':
-          $ref: '#/components/responses/Layer'
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/Layer"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
       description: |-
         To update the details of an existing contextual layer (either created for a user or a team), you should issue a PATCH request. This endpoint is available to all registered API users.
 
@@ -105,19 +105,19 @@ paths:
         - you can only update the enabled attribute of contextual layers you own, or contextual layers that belong to a team that you manage - if one of these conditions is not met, the enabled attribute value is kept as is.
         - you can only update the isPublic attribute of contextual layers if you are an ADMIN user and thecontextual layer you are trying to update is owned by a user (not by a team) - in all other cases, the isPublic attribute value is kept as is.
       requestBody:
-        $ref: '#/components/requestBodies/Layer'
+        $ref: "#/components/requestBodies/Layer"
       tags:
         - v1
     delete:
       summary: Delete contextual layer
       operationId: delete-contextual-layer
       responses:
-        '204':
+        "204":
           description: No Content
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
       description: |-
         Use this endpoint if you'd like to delete a contextual layer from the RW API. In order to delete a contextual layer, you must either be an `ADMIN` user or, alternatively, meet all of the following conditions:
         - the contextual layer's `isPublic` property must be set to `false`.
@@ -125,25 +125,25 @@ paths:
         - if the contextual layer is owned by a team, you must be one of the managers of the team that owns the contextual layer.
       tags:
         - v1
-  '/v1/contextual-layer/loss-layer/{startYear}/{endYear}/{z}/{x}/{y}.png':
+  "/v1/contextual-layer/loss-layer/{startYear}/{endYear}/{z}/{x}/{y}.png":
     get:
       summary: Get loss layer tiles
       tags:
         - v1
       responses:
-        '200':
+        "200":
           description: OK
           content:
             image/png:
               schema:
                 type: object
                 properties: {}
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
           description: Not Found
       operationId: get-loss-layer-image
-      description: 'Use this endpoint to retrieve PNG image corresponding to the loss layer tiles for the `(x,y,z)` tuple (where `x` represents latitude, `y` longitude, and `z` the zoom level) for loss layers for the interval of years from `startYear` to `endYear`.'
+      description: "Use this endpoint to retrieve PNG image corresponding to the loss layer tiles for the `(x,y,z)` tuple (where `x` represents latitude, `y` longitude, and `z` the zoom level) for loss layers for the interval of years from `startYear` to `endYear`."
     parameters:
       - schema:
           type: string
@@ -167,7 +167,7 @@ paths:
         required: true
       - schema:
           type: string
-        name: 'y'
+        name: "y"
         in: path
         required: true
   /v1/fw_contextual_layers/healthcheck:
@@ -176,33 +176,33 @@ paths:
       tags:
         - v1
       responses:
-        '200':
-          $ref: '#/components/responses/Healthcheck'
+        "200":
+          $ref: "#/components/responses/Healthcheck"
       operationId: get-fw_api-healthcheck
       security: []
     parameters: []
-  '/v1/contextual-layer/team/{teamId} - copy':
+  "/v1/contextual-layer/team/{teamId} - copy":
     delete:
-      summary: ''
+      summary: ""
       operationId: delete-v1-contextual-layer-team-teamId---copy
       responses:
-        '200':
+        "200":
           description: OK
-  '/v3/contextual-layer/team/:teamId':
+  "/v3/contextual-layer/team/{teamId}":
     post:
       summary: Create team layer
       tags:
         - v3
       responses:
-        '200':
-          $ref: '#/components/responses/Layer'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-      operationId: 'post-v3-contextual-layer-team-:teamId'
+        "200":
+          $ref: "#/components/responses/Layer"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+      operationId: "post-v3-contextual-layer-team-:teamId"
       requestBody:
-        $ref: '#/components/requestBodies/Layer'
+        $ref: "#/components/requestBodies/Layer"
       description: Create a layer owned by a team
       x-internal: false
 components:
@@ -298,14 +298,14 @@ components:
             Layer:
               value:
                 name: Test
-                url: 'https://example.com/contextual-layer/{z}/{x}/{y}.png'
+                url: "https://example.com/contextual-layer/{z}/{x}/{y}.png"
   responses:
     Layer:
       description: Layer response
       content:
         application/json:
           schema:
-            description: ''
+            description: ""
             type: object
             x-examples:
               example-1:
@@ -315,11 +315,11 @@ components:
                   attributes:
                     isPublic: true
                     name: layers.treeCoverLoss2015
-                    url: 'https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png'
+                    url: "https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png"
                     enabled: true
                     owner:
                       type: USER
-                    createdAt: '2017-09-01T15:13:39.502Z'
+                    createdAt: "2017-09-01T15:13:39.502Z"
             properties:
               data:
                 type: object
@@ -374,17 +374,17 @@ components:
                   attributes:
                     isPublic: true
                     name: layers.treeCoverLoss2015
-                    url: 'https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png'
+                    url: "https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png"
                     enabled: true
                     owner:
                       type: USER
-                    createdAt: '2017-09-01T15:13:39.502Z'
+                    createdAt: "2017-09-01T15:13:39.502Z"
     Layers:
       description: Example response
       content:
         application/json:
           schema:
-            description: ''
+            description: ""
             type: object
             x-examples:
               example-1:
@@ -394,11 +394,11 @@ components:
                     attributes:
                       isPublic: true
                       name: layers.treeCoverLoss2015
-                      url: 'https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png'
+                      url: "https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png"
                       enabled: true
                       owner:
                         type: USER
-                      createdAt: '2017-09-01T15:13:39.502Z'
+                      createdAt: "2017-09-01T15:13:39.502Z"
             properties:
               data:
                 type: array
@@ -455,17 +455,17 @@ components:
                     attributes:
                       isPublic: true
                       name: layers.treeCoverLoss2015
-                      url: 'https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png'
+                      url: "https://production-api.globalforestwatch.org/contextual-layer/loss-layer/2015/2016/{z}/{x}/{y}.png"
                       enabled: true
                       owner:
                         type: USER
-                      createdAt: '2017-09-01T15:13:39.502Z'
+                      createdAt: "2017-09-01T15:13:39.502Z"
     Error:
       description: Error Response
       content:
         application/json:
           schema:
-            description: ''
+            description: ""
             type: object
             properties:
               errors:
