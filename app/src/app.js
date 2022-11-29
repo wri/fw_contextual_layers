@@ -93,7 +93,12 @@ app.use(async (ctx, next) => {
   }
 });
 
-app.use(koaLogger());
+app.use(function (req, res, next) {
+  if (req.originalUrl === '/v1/fw_contextual_layers/healthcheck') {
+    return next();
+  }
+  return koaLogger();
+});
 
 app.use(async (ctx, next) => {
   await loggedInUserService.setLoggedInUser(ctx, logger);
