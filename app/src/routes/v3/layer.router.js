@@ -20,6 +20,39 @@ class Layer {
     return [UserMiddleware.mapAuthToUser];
   }
 
+  static async getAll(ctx) {
+    logger.info('Get all layers');
+
+    const userId = ctx.request.body.user.id;
+    const isEnabledDefined = typeof ctx.request.query.enabled !== 'undefined';
+
+    let teams;
+    try {
+      teams = await V3TeamService.getUserTeams(userId);
+    } catch (e) {
+      logger.error(e);
+      ctx.throw(500, "Error while retrieving user team");
+    }
+
+    const teamLayers = teams
+      .map(team => team.layers ?? [])
+      .reduce((acc, layers) => [...acc, ...layers], []);
+
+    const query = {
+      $and: [
+        {
+          $or: [{ isPublic: true }, { "owner.id": userId }, { _id: { $in: teamLayers } }]
+        }
+      ]
+    };
+
+    if (isEnabledDefined) query.$and.push({ enabled: ctx.request.query.enabled });
+
+    const layers = await LayerModel.find(query);
+
+    ctx.body = LayerSerializer.serialize(layers);
+  }
+
   static async createTeamLayer(ctx) {
     logger.info("Create team layer");
     const owner = { type: LayerService.type.TEAM, id: ctx.params.teamId };
@@ -157,6 +190,7 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
   await next();
 };
 
+router.get("/", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getAll);
 router.patch("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.patch, Layer.patchLayer);
 router.post(
   "/team/:teamId",
