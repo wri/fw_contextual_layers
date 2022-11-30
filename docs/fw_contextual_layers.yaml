@@ -212,6 +212,17 @@ paths:
         in: path
         required: true
         description: Id of the team to create the layer for
+  /v3/contextual-layer:
+    get:
+      summary: Get all contextual layers for user and teams
+      tags:
+        - v3
+      responses:
+        '200':
+          $ref: '#/components/responses/Layers'
+        '401':
+          $ref: '#/components/responses/Error'
+      operationId: get-v3-contextual-layer
 components:
   schemas:
     Layer:
