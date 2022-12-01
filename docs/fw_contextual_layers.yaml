@@ -68,7 +68,7 @@ paths:
         name: teamId
         in: path
         required: true
-  /v3/contextual-layer/deleteAllUserLayers:
+  /v3/contextual-layer/user:
     parameters: []
     delete:
       summary: Delete All Layers For User
@@ -229,6 +229,20 @@ paths:
           in: query
           name: enabled
           description: Flag for enabled layers (default ignored)
+  '/v3/contextual-layer/{layerId}':
+    parameters:
+      - schema:
+          type: string
+        name: layerId
+        in: path
+        required: true
+    delete:
+      summary: Delete a single layer
+      tags: []
+      responses:
+        '204':
+          description: No Content
+      operationId: delete-v3-contextual-layer-layerId
 components:
   schemas:
     Layer:

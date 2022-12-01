@@ -199,7 +199,7 @@ router.post(
   LayerValidator.create,
   Layer.createTeamLayer
 );
-router.delete("/deleteAllUserLayers", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteAllUserLayers);
+router.delete("/user", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteAllUserLayers);
 router.delete("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteLayer);
 
 module.exports = router;
