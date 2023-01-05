@@ -135,9 +135,11 @@ class Layer {
   static async deleteAllUserLayers(ctx) {
     logger.info(`Deleting all layers for user with id ${ctx.request.body.user}`);
 
-    await LayerModel.deleteMany({ "owner.id": ctx.request.body.user.id });
+    const layers = await LayerModel.find({ "owner.id": ctx.request.body.user.id })
 
-    ctx.body = "";
+    ctx.body = {
+      layersDeleted: layers.map(layer => layer.id),
+    };
     ctx.status = 204;
   }
 }
