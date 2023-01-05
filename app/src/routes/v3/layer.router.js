@@ -169,9 +169,9 @@ class Layer {
 
     const layers = await LayerModel.find({ "owner.id": ctx.request.body.user.id })
 
-    ctx.body = {
+    ctx.body = {data: {
       layersDeleted: layers.map(layer => layer.id),
-    };
+    }};
     ctx.status = 204;
   }
 }
