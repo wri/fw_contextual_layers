@@ -20,24 +20,56 @@ class Layer {
     return [UserMiddleware.mapAuthToUser];
   }
 
+  static async getAll(ctx) {
+    logger.info('Get all layers');
+
+    const userId = ctx.request.body.user.id;
+    const isEnabledDefined = typeof ctx.request.query.enabled !== 'undefined';
+
+    let teams;
+    try {
+      teams = await V3TeamService.getUserTeams(userId);
+    } catch (e) {
+      logger.error(e);
+      ctx.throw(500, "Error while retrieving user team");
+    }
+
+    const teamLayers = teams
+      .map(team => team.layers ?? [])
+      .reduce((acc, layers) => [...acc, ...layers], []);
+
+    const query = {
+      $and: [
+        {
+          $or: [{ isPublic: true }, { "owner.id": userId }, { _id: { $in: teamLayers } }]
+        }
+      ]
+    };
+
+    if (isEnabledDefined) query.$and.push({ enabled: ctx.request.query.enabled });
+
+    const layers = await LayerModel.find(query);
+
+    ctx.body = LayerSerializer.serialize(layers);
+  }
+
   static async createTeamLayer(ctx) {
     logger.info("Create team layer");
     const owner = { type: LayerService.type.TEAM, id: ctx.params.teamId };
+
     let team = null;
     try {
-      team = await TeamService.getTeam(owner.id);
+      team = await V3TeamService.getTeam(owner.id);
     } catch (e) {
       logger.error(e);
       ctx.throw(500, "Team retrieval failed.");
     }
+
     // get list of user teams
-    let teams = await V3TeamService.getUserTeams(ctx.request.body.user.id);
-    let matchingTeam = teams.find(obj => obj.id === owner.id);
-    const isManager =
-      matchingTeam &&
-      matchingTeam.attributes &&
-      (matchingTeam.attributes.userRole.toString() === "manager" ||
-        matchingTeam.attributes.userRole.toString() === "administrator");
+    const userTeams = await V3TeamService.getUserTeams(ctx.request.body.user.id);
+    const userTeam = userTeams.find(team => team.id === owner.id);
+    const isManager = userTeam && ["manager", "administrator"].includes(userTeam.userRole);
+
     if (isManager) {
       let layer = null;
       try {
@@ -48,7 +80,7 @@ class Layer {
       }
       const layers = team.layers || [];
       try {
-        await TeamService.patchTeamById(owner.id, {
+        await V3TeamService.patchTeamById(owner.id, {
           layers: [...layers, layer.id]
         });
       } catch (e) {
@@ -160,6 +192,7 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
   await next();
 };
 
+router.get("/", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getAll);
 router.patch("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.patch, Layer.patchLayer);
 router.post(
   "/team/:teamId",
@@ -168,7 +201,7 @@ router.post(
   LayerValidator.create,
   Layer.createTeamLayer
 );
-router.delete("/deleteAllUserLayers", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteAllUserLayers);
+router.delete("/user", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteAllUserLayers);
 router.delete("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteLayer);
 
 module.exports = router;
