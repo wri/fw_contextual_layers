@@ -53,6 +53,16 @@ class Layer {
     ctx.body = LayerSerializer.serialize(layers);
   }
 
+  static async getUser(ctx) {
+    logger.info('Get user layers');
+
+    const { userId } = ctx.request.params;
+
+    const layers = await LayerModel.find({"owner.id": userId});
+
+    ctx.body = LayerSerializer.serialize(layers);
+  }
+
   static async createTeamLayer(ctx) {
     logger.info("Create team layer");
     const owner = { type: LayerService.type.TEAM, id: ctx.params.teamId };
@@ -192,6 +202,7 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
   await next();
 };
 
+router.get("/user/:userId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getUser);
 router.get("/", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getAll);
 router.patch("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.patch, Layer.patchLayer);
 router.post(
