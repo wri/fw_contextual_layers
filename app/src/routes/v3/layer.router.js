@@ -183,7 +183,7 @@ class Layer {
     ctx.body = {data: {
       layersDeleted: layers.map(layer => layer.id),
     }};
-    ctx.status = 204;
+    ctx.status = 200;
   }
 }
 
