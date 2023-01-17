@@ -23,7 +23,7 @@ class V3TeamService {
     if (teams.length === 0) {
       logger.info("User does not belong to a team.");
     }
-    return teams.data.map(team => ({...team.attributes, id: team.id}));
+    return teams.data.map(team => ({ ...team.attributes, id: team.id }));
   }
 
   static async getTeamUsers(teamId) {

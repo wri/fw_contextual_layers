@@ -21,10 +21,10 @@ class Layer {
   }
 
   static async getAll(ctx) {
-    logger.info('Get all layers');
+    logger.info("Get all layers");
 
     const userId = ctx.request.body.user.id;
-    const isEnabledDefined = typeof ctx.request.query.enabled !== 'undefined';
+    const isEnabledDefined = typeof ctx.request.query.enabled !== "undefined";
 
     let teams;
     try {
@@ -34,9 +34,7 @@ class Layer {
       ctx.throw(500, "Error while retrieving user team");
     }
 
-    const teamLayers = teams
-      .map(team => team.layers ?? [])
-      .reduce((acc, layers) => [...acc, ...layers], []);
+    const teamLayers = teams.map(team => team.layers ?? []).reduce((acc, layers) => [...acc, ...layers], []);
 
     const query = {
       $and: [
@@ -54,11 +52,11 @@ class Layer {
   }
 
   static async getUser(ctx) {
-    logger.info('Get user layers');
+    logger.info("Get user layers");
 
     const { userId } = ctx.request.params;
 
-    const layers = await LayerModel.find({"owner.id": userId});
+    const layers = await LayerModel.find({ "owner.id": userId });
 
     ctx.body = LayerSerializer.serialize(layers);
   }
@@ -175,14 +173,16 @@ class Layer {
   }
 
   static async deleteAllUserLayers(ctx) {
-    const {userId} = ctx.request.params
+    const { userId } = ctx.request.params;
     logger.info(`Deleting all layers for user with id ${userId}`);
 
-    const layers = await LayerModel.find({ "owner.id": userId })
+    const layers = await LayerModel.find({ "owner.id": userId });
 
-    ctx.body = {data: {
-      layersDeleted: layers.map(layer => layer.id),
-    }};
+    ctx.body = {
+      data: {
+        layersDeleted: layers.map(layer => layer.id)
+      }
+    };
     ctx.status = 200;
   }
 }
