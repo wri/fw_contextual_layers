@@ -23,7 +23,7 @@ class V3TeamService {
     if (teams.length === 0) {
       logger.info("User does not belong to a team.");
     }
-    return teams && teams.data;
+    return teams.data.map(team => ({ ...team.attributes, id: team.id }));
   }
 
   static async getTeamUsers(teamId) {
@@ -46,6 +46,38 @@ class V3TeamService {
       logger.info("No users are on this team.");
     }
     return teams && teams.data;
+  }
+
+  static async getTeam(teamId) {
+    logger.info("Get team");
+    const baseURL = config.get("v3teamsAPI.url");
+    const response = await axios.default({
+      baseURL,
+      url: `/teams/${teamId}`,
+      method: "GET",
+      headers: {
+        authorization: loggedInUserService.token
+      }
+    });
+    const team = response.data;
+    if (!team || !team.data) return null;
+    return { ...team.data.attributes, id: team.data.id };
+  }
+
+  static async patchTeamById(teamId, body) {
+    logger.info("Get team by user id");
+    const baseURL = config.get("v3teamsAPI.url");
+    const response = await axios.default({
+      baseURL,
+      url: `/teams/${teamId}`,
+      method: "PATCH",
+      data: body,
+      headers: {
+        authorization: loggedInUserService.token
+      }
+    });
+    const team = response.data;
+    return { ...team.data.attributes, id: team.data.id };
   }
 }
 
