@@ -20,6 +20,13 @@ class Layer {
     return [UserMiddleware.mapAuthToUser];
   }
 
+  static async getEvery(ctx) {
+    logger.info("Get every layer");
+
+    const layers = await LayerModel.find();
+    ctx.body = LayerSerializer.serialize(layers);
+  }
+
   static async getAll(ctx) {
     logger.info("Get all layers");
 
@@ -203,6 +210,7 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
   await next();
 };
 
+router.get("/every", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getEvery);
 router.get("/user/:userId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getUser);
 router.get("/", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getAll);
 router.patch("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.patch, Layer.patchLayer);
