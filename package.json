@@ -21,7 +21,7 @@
     "url": "http://vizzuality.com/"
   },
   "engines": {
-    "node": "~10"
+    "node": "~16"
   },
   "license": "MIT",
   "devDependencies": {
@@ -63,7 +63,7 @@
     "@sentry/node": "^6.18.2",
     "axios": "^0.24.0",
     "bunyan": "^1.8.5",
-    "canvas": "^1.6.6",
+    "canvas": "^2.11.2",
     "config": "^1.21.0",
     "d3": "3.5.12",
     "jsonapi-serializer": "2.1.1",
