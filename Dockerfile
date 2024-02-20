@@ -1,4 +1,4 @@
-FROM node:10-stretch
+FROM node:16
 MAINTAINER info@vizzuality.com
 
 ENV NAME fw-contextual-layer
@@ -6,7 +6,7 @@ ENV NAME fw-contextual-layer
 RUN apt-get update -y && apt-get upgrade -y
 
 RUN apt-get install -y --no-install-recommends bash git openssh-client openssh-server python \
-     libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
+    libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++
 
 RUN yarn global add bunyan
 
