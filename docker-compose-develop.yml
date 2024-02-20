@@ -63,7 +63,7 @@ services:
     command: yarn run docs -l 30250
 
   mongo:
-    image: mongo:4.0
+    image: mongo:3.6
     container_name: fw-contextual-layer-mongo-develop
     command: --smallfiles
     ports:
