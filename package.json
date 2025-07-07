@@ -21,11 +21,10 @@
     "url": "http://vizzuality.com/"
   },
   "engines": {
-    "node": "~16"
+    "node": "~22"
   },
   "license": "MIT",
   "devDependencies": {
-    "@3sidedcube/prettier-config": "^1.0.0",
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
@@ -63,7 +62,6 @@
     "@sentry/node": "^6.18.2",
     "axios": "^0.24.0",
     "bunyan": "^1.8.5",
-    "canvas": "^2.11.2",
     "config": "^1.21.0",
     "d3": "3.5.12",
     "jsonapi-serializer": "2.1.1",
@@ -76,9 +74,9 @@
     "koa-router": "^10.1.1",
     "koa-simple-healthcheck": "^0.0.1",
     "koa-validate": "^1.0.7",
-    "mongoose": "^4.11.0",
+    "mongoose": "^6.13.8",
     "request": "^2.79.0",
-    "request-promise": "^4.1.1"
-  },
-  "prettier": "@3sidedcube/prettier-config"
+    "request-promise": "^4.1.1",
+    "skia-canvas": "^2.0.2"
+  }
 }
