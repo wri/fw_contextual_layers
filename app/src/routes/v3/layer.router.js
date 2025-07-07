@@ -41,7 +41,7 @@ class Layer {
       ctx.throw(500, "Error while retrieving user team");
     }
 
-    const teamLayers = teams.flatMap(team => team.layers ?? []);
+    const teamLayers = teams.flatMap((team) => team.layers ?? []);
 
     const query = {
       $and: [
