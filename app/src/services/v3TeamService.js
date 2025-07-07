@@ -13,8 +13,8 @@ class V3TeamService {
         url: `/teams/user/${user}`,
         method: "GET",
         headers: {
-          authorization: loggedInUserService.token
-        }
+          authorization: loggedInUserService.token,
+        },
       });
       teams = response.data;
     } catch (e) {
@@ -23,7 +23,7 @@ class V3TeamService {
     if (teams.length === 0) {
       logger.info("User does not belong to a team.");
     }
-    return teams.data.map(team => ({ ...team.attributes, id: team.id }));
+    return teams.data.map((team) => ({ ...team.attributes, id: team.id }));
   }
 
   static async getTeamUsers(teamId) {
@@ -35,8 +35,8 @@ class V3TeamService {
         url: `/teams/${teamId}/users`,
         method: "GET",
         headers: {
-          authorization: loggedInUserService.token
-        }
+          authorization: loggedInUserService.token,
+        },
       });
       teams = response.data;
     } catch (e) {
@@ -56,8 +56,8 @@ class V3TeamService {
       url: `/teams/${teamId}`,
       method: "GET",
       headers: {
-        authorization: loggedInUserService.token
-      }
+        authorization: loggedInUserService.token,
+      },
     });
     const team = response.data;
     if (!team || !team.data) return null;
@@ -73,8 +73,8 @@ class V3TeamService {
       method: "PATCH",
       data: body,
       headers: {
-        authorization: loggedInUserService.token
-      }
+        authorization: loggedInUserService.token,
+      },
     });
     const team = response.data;
     return { ...team.data.attributes, id: team.data.id };

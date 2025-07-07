@@ -1,1 +1,1 @@
-// Placeholder file to satisfy TypeScript include pattern 
+// Placeholder file to satisfy TypeScript include pattern

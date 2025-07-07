@@ -20,7 +20,8 @@ class LossLayerProtocol {
 
   // eslint-disable-next-line consistent-return
   static async getTile(z, x, y) {
-    const TILE_URL = config.get("hansenUrl")
+    const TILE_URL = config
+      .get("hansenUrl")
       .replace("{z}", z)
       .replace("{x}", x)
       .replace("{y}", y);
@@ -42,7 +43,11 @@ class LossLayerProtocol {
   static filterImgData(data, { w, h, z, startYear, endYear }) {
     const components = 4;
     const exp = z < 11 ? 0.3 + (z - 3) / 20 : 1;
-    const myscale = d3.scale.pow().exponent(exp).domain([0, 256]).range([0, 256]);
+    const myscale = d3.scale
+      .pow()
+      .exponent(exp)
+      .domain([0, 256])
+      .range([0, 256]);
 
     for (let i = 0; i < w; ++i) {
       for (let j = 0; j < h; ++j) {
@@ -80,8 +85,10 @@ class LossLayerProtocol {
     } else {
       ctx.imageSmoothingEnabled = false;
 
-      const srcX = ((256 / Math.pow(2, zsteps)) * (x % Math.pow(2, zsteps))) | 0;
-      const srcY = ((256 / Math.pow(2, zsteps)) * (y % Math.pow(2, zsteps))) | 0;
+      const srcX =
+        ((256 / Math.pow(2, zsteps)) * (x % Math.pow(2, zsteps))) | 0;
+      const srcY =
+        ((256 / Math.pow(2, zsteps)) * (y % Math.pow(2, zsteps))) | 0;
       const srcW = (256 / Math.pow(2, zsteps)) | 0;
       const srcH = (256 / Math.pow(2, zsteps)) | 0;
 

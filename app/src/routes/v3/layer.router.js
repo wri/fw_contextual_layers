@@ -12,7 +12,7 @@ const V3TeamService = require("../../services/v3TeamService");
 const V3LayerService = require("../../services/v3LayerService");
 
 const router = new Router({
-  prefix: "/contextual-layer"
+  prefix: "/contextual-layer",
 });
 
 class Layer {
@@ -41,17 +41,24 @@ class Layer {
       ctx.throw(500, "Error while retrieving user team");
     }
 
-    const teamLayers = teams.map(team => team.layers ?? []).reduce((acc, layers) => [...acc, ...layers], []);
+    const teamLayers = teams
+      .map((team) => team.layers ?? [])
+      .reduce((acc, layers) => [...acc, ...layers], []);
 
     const query = {
       $and: [
         {
-          $or: [{ isPublic: true }, { "owner.id": userId }, { _id: { $in: teamLayers } }]
-        }
-      ]
+          $or: [
+            { isPublic: true },
+            { "owner.id": userId },
+            { _id: { $in: teamLayers } },
+          ],
+        },
+      ],
     };
 
-    if (isEnabledDefined) query.$and.push({ enabled: ctx.request.query.enabled });
+    if (isEnabledDefined)
+      query.$and.push({ enabled: ctx.request.query.enabled });
 
     const layers = await LayerModel.find(query);
 
@@ -81,9 +88,12 @@ class Layer {
     }
 
     // get list of user teams
-    const userTeams = await V3TeamService.getUserTeams(ctx.request.body.user.id);
-    const userTeam = userTeams.find(team => team.id === owner.id);
-    const isManager = userTeam && ["manager", "administrator"].includes(userTeam.userRole);
+    const userTeams = await V3TeamService.getUserTeams(
+      ctx.request.body.user.id
+    );
+    const userTeam = userTeams.find((team) => team.id === owner.id);
+    const isManager =
+      userTeam && ["manager", "administrator"].includes(userTeam.userRole);
 
     if (isManager) {
       let layer = null;
@@ -96,7 +106,7 @@ class Layer {
       const layers = team.layers || [];
       try {
         await V3TeamService.patchTeamById(owner.id, {
-          layers: [...layers, layer.id]
+          layers: [...layers, layer.id],
         });
       } catch (e) {
         logger.error(e);
@@ -164,7 +174,11 @@ class Layer {
         ctx.throw(500, "Team users retrieval failed.");
       }
     }
-    const hasPermission = await V3LayerService.canDeleteLayer(layer, ctx.request.body.user, teamUsers);
+    const hasPermission = await V3LayerService.canDeleteLayer(
+      layer,
+      ctx.request.body.user,
+      teamUsers
+    );
     if (hasPermission) {
       try {
         await LayerModel.remove({ _id: layerId });
@@ -187,8 +201,8 @@ class Layer {
 
     ctx.body = {
       data: {
-        layersDeleted: layers.map(layer => layer.id)
-      }
+        layersDeleted: layers.map((layer) => layer.id),
+      },
     };
     ctx.status = 200;
   }
@@ -200,7 +214,7 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
 
   const user = {
     ...(query.loggedUser ? JSON.parse(query.loggedUser) : {}),
-    ...body.loggedUser
+    ...body.loggedUser,
   };
 
   if (!user || !user.id) {
@@ -210,10 +224,34 @@ const isAuthenticatedMiddleware = async (ctx, next) => {
   await next();
 };
 
-router.get("/every", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getEvery);
-router.get("/user/:userId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getUser);
-router.get("/", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.getAll, Layer.getAll);
-router.patch("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, LayerValidator.patch, Layer.patchLayer);
+router.get(
+  "/every",
+  isAuthenticatedMiddleware,
+  ...Layer.middleware,
+  LayerValidator.getAll,
+  Layer.getEvery
+);
+router.get(
+  "/user/:userId",
+  isAuthenticatedMiddleware,
+  ...Layer.middleware,
+  LayerValidator.getAll,
+  Layer.getUser
+);
+router.get(
+  "/",
+  isAuthenticatedMiddleware,
+  ...Layer.middleware,
+  LayerValidator.getAll,
+  Layer.getAll
+);
+router.patch(
+  "/:layerId",
+  isAuthenticatedMiddleware,
+  ...Layer.middleware,
+  LayerValidator.patch,
+  Layer.patchLayer
+);
 router.post(
   "/team/:teamId",
   isAuthenticatedMiddleware,
@@ -221,7 +259,17 @@ router.post(
   LayerValidator.create,
   Layer.createTeamLayer
 );
-router.delete("/user/:userId", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteAllUserLayers);
-router.delete("/:layerId", isAuthenticatedMiddleware, ...Layer.middleware, Layer.deleteLayer);
+router.delete(
+  "/user/:userId",
+  isAuthenticatedMiddleware,
+  ...Layer.middleware,
+  Layer.deleteAllUserLayers
+);
+router.delete(
+  "/:layerId",
+  isAuthenticatedMiddleware,
+  ...Layer.middleware,
+  Layer.deleteLayer
+);
 
 module.exports = router;
