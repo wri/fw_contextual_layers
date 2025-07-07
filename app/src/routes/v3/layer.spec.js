@@ -6,7 +6,10 @@ const Layer = require("models/layer.model");
 const nock = require("nock");
 const config = require("config");
 const { mockGetUserFromToken } = require("../../test/mocha/utils/helpers");
-const { createTeamLayer, createUserLayer } = require("../../test/jest/utils/helpers");
+const {
+  createTeamLayer,
+  createUserLayer,
+} = require("../../test/jest/utils/helpers");
 //const { expect } = require("chai");
 
 const requester = getTestServer();
@@ -43,9 +46,9 @@ describe("Create a team layer", function () {
       url: "url",
       owner: {
         id: userId,
-        type: "owner type"
+        type: "owner type",
       },
-      enabled: true
+      enabled: true,
     };
 
     nock(config.get("v3teamsAPI.url"))
@@ -55,16 +58,16 @@ describe("Create a team layer", function () {
           {
             id: teamId,
             attributes: {
-              userRole: "manager"
-            }
-          }
-        ]
+              userRole: "manager",
+            },
+          },
+        ],
       });
 
     nock(config.get("teamsAPI.url"))
       .get(`/teams/${teamId}`)
       .reply(200, {
-        data: { id: teamId }
+        data: { id: teamId },
       });
 
     nock(config.get("teamsAPI.url"))
@@ -72,8 +75,8 @@ describe("Create a team layer", function () {
       .reply(200, {
         data: {
           id: teamId,
-          attributes: {}
-        }
+          attributes: {},
+        },
       });
 
     const response = await requester
@@ -84,11 +87,17 @@ describe("Create a team layer", function () {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("data");
     expect(response.body.data).toHaveProperty("attributes");
-    expect(response.body.data.attributes).toHaveProperty("owner", { id: teamId.toString(), type: "TEAM" });
+    expect(response.body.data.attributes).toHaveProperty("owner", {
+      id: teamId.toString(),
+      type: "TEAM",
+    });
 
     const layers = await Layer.find({});
     expect(layers.length).toBe(1);
-    expect(layers[0]).toHaveProperty("_id", new ObjectId(response.body.data.id));
+    expect(layers[0]).toHaveProperty(
+      "_id",
+      new ObjectId(response.body.data.id)
+    );
   });
 
   it("Returns forbidden if the user is not a manager of the team", async function () {
@@ -102,9 +111,9 @@ describe("Create a team layer", function () {
       url: "url",
       owner: {
         id: userId,
-        type: "TEAM"
+        type: "TEAM",
       },
-      enabled: true
+      enabled: true,
     };
 
     nock(config.get("v3teamsAPI.url"))
@@ -114,16 +123,16 @@ describe("Create a team layer", function () {
           {
             id: teamId,
             attributes: {
-              userRole: "monitor"
-            }
-          }
-        ]
+              userRole: "monitor",
+            },
+          },
+        ],
       });
 
     nock(config.get("teamsAPI.url"))
       .get(`/teams/${teamId}`)
       .reply(200, {
-        data: { id: teamId }
+        data: { id: teamId },
       });
 
     const response = await requester
@@ -134,7 +143,10 @@ describe("Create a team layer", function () {
     expect(response.status).toBe(403);
     expect(response.body).toHaveProperty("errors");
     expect(response.body.errors[0]).toHaveProperty("status", 403);
-    expect(response.body.errors[0]).toHaveProperty("detail", "Only team managers can create team layers.");
+    expect(response.body.errors[0]).toHaveProperty(
+      "detail",
+      "Only team managers can create team layers."
+    );
 
     const layers = await Layer.find({});
     expect(layers.length).toBe(0);
@@ -181,10 +193,10 @@ describe("Delete a layer", function () {
             attributes: {
               teamId,
               userId: USERS.USER.id,
-              role: "manager"
-            }
-          }
-        ]
+              role: "manager",
+            },
+          },
+        ],
       });
 
     const response = await requester
@@ -210,10 +222,10 @@ describe("Delete a layer", function () {
             attributes: {
               teamId,
               userId: USERS.USER.id,
-              role: "administrator"
-            }
-          }
-        ]
+              role: "administrator",
+            },
+          },
+        ],
       });
 
     const response = await requester
@@ -239,10 +251,10 @@ describe("Delete a layer", function () {
             attributes: {
               teamId,
               userId: USERS.USER.id,
-              role: "monitor"
-            }
-          }
-        ]
+              role: "monitor",
+            },
+          },
+        ],
       });
 
     const response = await requester
@@ -272,10 +284,10 @@ describe("Delete a layer", function () {
             attributes: {
               teamId,
               userId: USERS.ADMIN.id,
-              role: "monitor"
-            }
-          }
-        ]
+              role: "monitor",
+            },
+          },
+        ],
       });
 
     const response = await requester
@@ -322,7 +334,7 @@ describe("Update a layer", function () {
       .set("Authorization", `Bearer abcd`)
       .send({
         isPublic: true,
-        enabled: false
+        enabled: false,
       });
 
     expect(response.status).toBe(204);
@@ -341,7 +353,7 @@ describe("Update a layer", function () {
       .set("Authorization", `Bearer abcd`)
       .send({
         isPublic: true,
-        enabled: false
+        enabled: false,
       });
 
     expect(response.status).toBe(204);
@@ -360,7 +372,7 @@ describe("Update a layer", function () {
       .set("Authorization", `Bearer abcd`)
       .send({
         isPublic: true,
-        enabled: false
+        enabled: false,
       });
 
     expect(response.status).toBe(204);
@@ -384,10 +396,10 @@ describe("Update a layer", function () {
             attributes: {
               teamId,
               userId: USERS.USER.id,
-              role: "manager"
-            }
-          }
-        }
+              role: "manager",
+            },
+          },
+        },
       ]);
 
     const response = await requester
@@ -395,7 +407,7 @@ describe("Update a layer", function () {
       .set("Authorization", `Bearer abcd`)
       .send({
         isPublic: true,
-        enabled: false
+        enabled: false,
       });
 
     expect(response.status).toBe(204);
@@ -419,10 +431,10 @@ describe("Update a layer", function () {
             attributes: {
               teamId,
               userId: USERS.USER.id,
-              role: "administrator"
-            }
-          }
-        ]
+              role: "administrator",
+            },
+          },
+        ],
       });
 
     const response = await requester
@@ -430,7 +442,7 @@ describe("Update a layer", function () {
       .set("Authorization", `Bearer abcd`)
       .send({
         isPublic: true,
-        enabled: false
+        enabled: false,
       });
 
     expect(response.status).toBe(204);
@@ -454,10 +466,10 @@ describe("Update a layer", function () {
             attributes: {
               teamId,
               userId: USERS.USER.id,
-              role: "monitor"
-            }
-          }
-        ]
+              role: "monitor",
+            },
+          },
+        ],
       });
 
     const response = await requester
@@ -465,7 +477,7 @@ describe("Update a layer", function () {
       .set("Authorization", `Bearer abcd`)
       .send({
         isPublic: true,
-        enabled: false
+        enabled: false,
       });
 
     expect(response.status).toBe(204);
@@ -489,10 +501,10 @@ describe("Update a layer", function () {
             attributes: {
               teamId,
               userId: USERS.ADMIN.id,
-              role: "monitor"
-            }
-          }
-        ]
+              role: "monitor",
+            },
+          },
+        ],
       });
 
     const response = await requester
@@ -500,7 +512,7 @@ describe("Update a layer", function () {
       .set("Authorization", `Bearer abcd`)
       .send({
         isPublic: true,
-        enabled: false
+        enabled: false,
       });
 
     expect(response.status).toBe(204);

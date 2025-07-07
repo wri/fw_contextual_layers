@@ -12,7 +12,7 @@ const koaBody = require("koa-body")({
   multipart: true,
   jsonLimit: "50mb",
   formLimit: "50mb",
-  textLimit: "50mb"
+  textLimit: "50mb",
 });
 const loggedInUserService = require("./services/LoggedInUserService");
 const Sentry = require("@sentry/node");
@@ -24,18 +24,25 @@ if (typeof dbSecret === "string") {
 
 const mongoURL =
   "mongodb://" +
-  `${dbSecret.username}:${dbSecret.password}` +
+  `${encodeURIComponent(dbSecret.username)}:${encodeURIComponent(
+    dbSecret.password
+  )}` +
   `@${config.get("mongodb.host")}:${config.get("mongodb.port")}` +
   `/${config.get("mongodb.database")}`;
 
-mongoose.Promise = Promise;
+mongoose.Promise = global.Promise;
 
-mongoose.connect(mongoURL, err => {
-  if (err) {
-    logger.error(err);
-    throw new Error(err);
+async function connectToMongo() {
+  try {
+    await mongoose.connect(mongoURL);
+    logger.info("MongoDB connected");
+  } catch (err) {
+    logger.error("MongoDB connection error", err);
+    process.exit(1);
   }
-});
+}
+
+connectToMongo();
 
 const app = new Koa();
 
@@ -44,7 +51,7 @@ const app = new Koa();
  */
 Sentry.init({
   dsn: "https://23078bc49f3e4aa5a93e6c7610707bfc@o163691.ingest.sentry.io/6262295",
-  environment: process.env.NODE_ENV
+  environment: process.env.NODE_ENV,
 });
 
 app.on("error", (err, ctx) => {

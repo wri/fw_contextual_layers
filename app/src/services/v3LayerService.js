@@ -4,26 +4,32 @@ class V3LayerService {
   static get type() {
     return {
       USER: "USER",
-      TEAM: "TEAM"
+      TEAM: "TEAM",
     };
   }
 
   static setIsPublic(data, owner) {
-    return data.user.role === "ADMIN" && owner.type === V3LayerService.type.USER ? data.isPublic : false;
+    return data.user.role === "ADMIN" && owner.type === V3LayerService.type.USER
+      ? data.isPublic
+      : false;
   }
 
   static updateIsPublic(layer, data) {
-    return data.user.role === "ADMIN" && layer.owner.type === V3LayerService.type.USER ? data.isPublic : layer.isPublic;
+    return data.user.role === "ADMIN" &&
+      layer.owner.type === V3LayerService.type.USER
+      ? data.isPublic
+      : layer.isPublic;
   }
 
   static getEnabled(layer, data, teamUsers) {
     let manager = null;
     if (teamUsers)
       manager = teamUsers.find(
-        teamUser =>
+        (teamUser) =>
           teamUser.attributes.userId &&
           teamUser.attributes.userId.toString() === data.user.id.toString() &&
-          (teamUser.attributes.role === "manager" || teamUser.attributes.role === "administrator")
+          (teamUser.attributes.role === "manager" ||
+            teamUser.attributes.role === "administrator")
       );
     return !teamUsers || manager ? data.enabled : layer.enabled;
   }
@@ -45,10 +51,11 @@ class V3LayerService {
       case V3LayerService.type.TEAM: {
         // find user in team and check if they're a manager/administrator
         let manager = teamUsers.find(
-          teamUser =>
+          (teamUser) =>
             teamUser.attributes.userId &&
             teamUser.attributes.userId.toString() === user.id.toString() &&
-            (teamUser.attributes.role === "manager" || teamUser.attributes.role === "administrator")
+            (teamUser.attributes.role === "manager" ||
+              teamUser.attributes.role === "administrator")
         );
         if (!manager) return false;
         else return true;
