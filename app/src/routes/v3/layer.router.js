@@ -20,8 +20,7 @@ class Layer {
   static async getEvery(ctx) {
     logger.info("Get every layer");
 
-    if (ctx.request.body.user?.role !== "ADMIN")
-      throw new HttpException(403, "Forbidden");
+    if (ctx.request.body.user?.role !== "ADMIN") ctx.throw(403, "Unauthorized");
 
     const layers = await LayerModel.find();
     ctx.body = LayerSerializer.serialize(layers);
