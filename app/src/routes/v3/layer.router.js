@@ -5,9 +5,6 @@ const LayerSerializer = require("serializers/layer.serializer");
 const UserMiddleware = require("middleware/user.middleware");
 const LayerService = require("services/layer.service");
 const LayerValidator = require("validators/layer.validator");
-const TeamService = require("services/team.service");
-//const lossLayerProvider = require("lossLayer.provider");
-//const TileNotFoundError = require("TileNotFoundError");
 const V3TeamService = require("../../services/v3TeamService");
 const V3LayerService = require("../../services/v3LayerService");
 
@@ -22,6 +19,9 @@ class Layer {
 
   static async getEvery(ctx) {
     logger.info("Get every layer");
+
+    if (ctx.request.body.user?.role !== "ADMIN")
+      throw new HttpException(403, "Forbidden");
 
     const layers = await LayerModel.find();
     ctx.body = LayerSerializer.serialize(layers);
