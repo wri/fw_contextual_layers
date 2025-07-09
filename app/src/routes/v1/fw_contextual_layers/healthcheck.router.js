@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const logger = require("logger");
 
 const router = new Router({
-  prefix: "/healthcheck"
+  prefix: "/healthcheck",
 });
 
 router.get(
@@ -16,7 +16,7 @@ router.get(
         logger.error(error);
         return { error: error.message };
       }
-    }
+    },
   })
 );
 

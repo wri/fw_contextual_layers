@@ -5,7 +5,9 @@ class ResponseError extends Error {
     super();
     this.name = "ResponseError";
     this.statusCode = statusCode;
-    this.message = `${statusCode} - ${JSON && JSON.stringify ? JSON.stringify(body) : body}`;
+    this.message = `${statusCode} - ${
+      JSON && JSON.stringify ? JSON.stringify(body) : body
+    }`;
     this.error = body;
     this.response = response;
   }
