@@ -20,9 +20,10 @@ class Layer {
   static async getEvery(ctx) {
     logger.info("Get every layer");
 
-    if (ctx.request.body.user?.role !== "ADMIN") ctx.throw(403, "Unauthorized");
+    //if (ctx.request.body.user?.role !== "ADMIN") ctx.throw(403, "Unauthorized");
 
     const layers = await LayerModel.find();
+    console.log({ layers });
     ctx.body = LayerSerializer.serialize(layers);
   }
 
